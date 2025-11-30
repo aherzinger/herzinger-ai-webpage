@@ -1,725 +1,1393 @@
 <!DOCTYPE html>
 <html class="scroll-smooth" lang="de">
-<head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>herzinger-ai | AI Solutions &amp; Engineering</title>
-    
+
     <!-- External Dependencies -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
-    
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap"
+      rel="stylesheet"
+    />
+
     <!-- Tailwind Config -->
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    colors: {
-                        brand: {
-                            dark: 'var(--color-bg-main)',
-                            gray: 'var(--color-bg-secondary)',
-                            cyan: 'var(--color-accent-primary)', 
-                            teal: 'var(--color-accent-secondary)',
-                            white: 'var(--color-text-main)',
-                            muted: 'var(--color-text-muted)',
-                            border: 'var(--color-border)',
-                            panel: 'var(--color-bg-panel)'
-                        }
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'float': 'float 6s ease-in-out infinite',
-                        'fade-in-up': 'fadeInUp 0.5s ease-out forwards',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-10px)' },
-                        },
-                        fadeInUp: {
-                            '0%': { opacity: '0', transform: 'translateY(20px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
-                        }
-                    }
-                }
-            }
-        }
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "sans-serif"],
+              mono: ["JetBrains Mono", "monospace"],
+            },
+            colors: {
+              brand: {
+                dark: "var(--color-bg-main)",
+                gray: "var(--color-bg-secondary)",
+                cyan: "var(--color-accent-primary)",
+                teal: "var(--color-accent-secondary)",
+                white: "var(--color-text-main)",
+                muted: "var(--color-text-muted)",
+                border: "var(--color-border)",
+                panel: "var(--color-bg-panel)",
+              },
+            },
+            animation: {
+              "pulse-slow": "pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+              float: "float 6s ease-in-out infinite",
+              "fade-in-up": "fadeInUp 0.5s ease-out forwards",
+            },
+            keyframes: {
+              float: {
+                "0%, 100%": { transform: "translateY(0)" },
+                "50%": { transform: "translateY(-10px)" },
+              },
+              fadeInUp: {
+                "0%": { opacity: "0", transform: "translateY(20px)" },
+                "100%": { opacity: "1", transform: "translateY(0)" },
+              },
+            },
+          },
+        },
+      };
     </script>
-    
+
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="src/styles/variables.css">
-    <link rel="stylesheet" href="src/styles/base.css">
-    
+    <link rel="stylesheet" href="src/styles/variables.css" />
+    <link rel="stylesheet" href="src/styles/base.css" />
+
     <!-- Note: The original HTML had many inline scripts for image processing.
          These are Google-specific scripts that handle dynamic image loading.
          They are preserved in the original functionality but not included here
          as they are external dependencies. -->
-</head>
-<body class="selection:bg-brand-cyan selection:text-brand-dark overflow-x-hidden relative">
-    
+  </head>
+  <body
+    class="selection:bg-brand-cyan selection:text-brand-dark overflow-x-hidden relative"
+  >
     <!-- Source Code Modal -->
-    <div class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity opacity-0 duration-300" id="source-modal">
-        <div class="relative w-[90vw] h-[85vh] bg-brand-dark border border-brand-cyan/30 rounded-xl shadow-2xl flex flex-col overflow-hidden transform scale-95 transition-transform duration-300" id="source-modal-content">
-            <!-- Modal Header -->
-            <div class="flex items-center justify-between px-6 py-4 border-b border-brand-cyan/20 bg-brand-gray/50">
-                <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined text-brand-cyan">code</span>
-                    <h3 class="font-bold text-white tracking-wide">View Source Code</h3>
-                </div>
-                <div class="flex items-center gap-4">
-                    <button class="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-brand-dark bg-brand-cyan rounded hover:bg-white transition-colors" id="copy-btn" onclick="copySourceCode()">
-                        <span class="material-symbols-outlined text-sm">content_copy</span>
-                        <span id="copy-text">Copy All</span>
-                    </button>
-                    <button class="text-gray-400 hover:text-white transition-colors" onclick="closeSourceModal()">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
-                </div>
-            </div>
-            <!-- Modal Body -->
-            <div class="flex-1 overflow-hidden relative group">
-                <textarea class="w-full h-full bg-[#0d1117] text-gray-300 font-mono text-xs p-6 resize-none focus:outline-none leading-relaxed selection:bg-brand-cyan/30" id="source-code-area" readonly="" spellcheck="false"></textarea>
-            </div>
+    <div
+      class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity opacity-0 duration-300"
+      id="source-modal"
+    >
+      <div
+        class="relative w-[90vw] h-[85vh] bg-brand-dark border border-brand-cyan/30 rounded-xl shadow-2xl flex flex-col overflow-hidden transform scale-95 transition-transform duration-300"
+        id="source-modal-content"
+      >
+        <!-- Modal Header -->
+        <div
+          class="flex items-center justify-between px-6 py-4 border-b border-brand-cyan/20 bg-brand-gray/50"
+        >
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-brand-cyan">code</span>
+            <h3 class="font-bold text-white tracking-wide">View Source Code</h3>
+          </div>
+          <div class="flex items-center gap-4">
+            <button
+              class="flex items-center gap-2 px-3 py-1.5 text-xs font-bold text-brand-dark bg-brand-cyan rounded hover:bg-white transition-colors"
+              id="copy-btn"
+              onclick="copySourceCode()"
+            >
+              <span class="material-symbols-outlined text-sm"
+                >content_copy</span
+              >
+              <span id="copy-text">Copy All</span>
+            </button>
+            <button
+              class="text-gray-400 hover:text-white transition-colors"
+              onclick="closeSourceModal()"
+            >
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
         </div>
+        <!-- Modal Body -->
+        <div class="flex-1 overflow-hidden relative group">
+          <textarea
+            class="w-full h-full bg-[#0d1117] text-gray-300 font-mono text-xs p-6 resize-none focus:outline-none leading-relaxed selection:bg-brand-cyan/30"
+            id="source-code-area"
+            readonly=""
+            spellcheck="false"
+          ></textarea>
+        </div>
+      </div>
     </div>
 
     <!-- Background Elements -->
-    <div class="fixed inset-0 z-0 pointer-events-none opacity-40 transition-opacity duration-500">
-        <div class="absolute inset-0 bg-gradient-to-br from-brand-dark via-brand-gray/30 to-brand-dark transition-colors duration-300"></div>
+    <div
+      class="fixed inset-0 z-0 pointer-events-none opacity-40 transition-opacity duration-500"
+    >
+      <div
+        class="absolute inset-0 bg-gradient-to-br from-brand-dark via-brand-gray/30 to-brand-dark transition-colors duration-300"
+      ></div>
     </div>
 
     <!-- Navigation -->
-    <nav class="fixed top-0 w-full z-50 border-b border-brand-border transition-all duration-300 shadow-lg bg-brand-dark/90" id="navbar">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex-shrink-0 flex items-center space-x-2 cursor-pointer" onclick="window.scrollTo(0,0)">
-                    <span class="font-mono text-xl font-bold tracking-tighter text-brand-white">herzinger-<span class="text-brand-cyan">ai</span></span>
-                </div>
-                <div class="hidden md:block">
-                    <div class="ml-10 flex items-center space-x-4">
-                        <a class="hover:text-brand-cyan transition-colors px-3 py-2 rounded-md text-sm font-medium" href="#about">
-                            <span class="lang-de">Über mich</span><span class="lang-en">About</span>
-                        </a>
-                        <a class="hover:text-brand-cyan transition-colors px-3 py-2 rounded-md text-sm font-medium" href="#solutions">
-                            <span class="lang-de">Lösungen</span><span class="lang-en">Solutions</span>
-                        </a>
-                        <a class="hover:text-brand-cyan transition-colors px-3 py-2 rounded-md text-sm font-medium" href="#projects">
-                            <span class="lang-de">Projekte</span><span class="lang-en">Work</span>
-                        </a>
-                        <!-- Theme Toggle -->
-                        <button class="flex items-center justify-center w-8 h-8 rounded-full bg-brand-gray/50 hover:bg-brand-cyan/20 text-brand-cyan transition-all border border-brand-border" onclick="toggleTheme()" title="Toggle Theme">
-                            <span class="material-symbols-outlined text-sm" id="theme-icon">light_mode</span>
-                        </button>
-                        <!-- Language Toggle -->
-                        <button class="flex items-center gap-1 text-brand-muted hover:text-brand-white transition-colors px-3 py-2 rounded-md text-sm font-medium border border-brand-border hover:border-brand-cyan/50 min-w-[60px] justify-center" onclick="toggleLanguage()">
-                            <span class="lang-de font-bold text-brand-cyan">DE</span><span class="lang-de text-xs">/EN</span>
-                            <span class="lang-en font-bold text-brand-cyan">EN</span><span class="lang-en text-xs">/DE</span>
-                        </button>
-                        <!-- View Source -->
-                        <button class="flex items-center gap-1 text-brand-muted hover:text-brand-white transition-colors px-3 py-2 rounded-md text-sm font-medium border border-brand-border hover:border-brand-cyan/50" onclick="openSourceModal()">
-                            <span class="material-symbols-outlined text-xs">code</span>
-                        </button>
-                        <a class="bg-brand-cyan/10 border border-brand-cyan text-brand-cyan hover:bg-brand-cyan hover:text-brand-dark transition-all px-4 py-2 rounded-full text-sm font-bold" href="#contact">
-                            <span class="lang-de">Kontakt</span><span class="lang-en">Contact</span>
-                        </a>
-                    </div>
-                </div>
-                <!-- Mobile menu button -->
-                <div class="-mr-2 flex md:hidden items-center gap-2">
-                    <button class="flex items-center justify-center w-8 h-8 rounded-full bg-brand-gray/50 text-brand-cyan border border-brand-border" onclick="toggleTheme()">
-                        <span class="material-symbols-outlined text-sm">light_mode</span>
-                    </button>
-                    <button class="flex items-center gap-1 text-brand-muted px-2 py-1 rounded border border-brand-border" onclick="toggleLanguage()">
-                        <span class="lang-de font-bold text-brand-cyan">DE</span>
-                        <span class="lang-en font-bold text-brand-cyan">EN</span>
-                    </button>
-                    <button class="inline-flex items-center justify-center p-2 rounded-md text-brand-cyan hover:bg-brand-gray focus:outline-none" onclick="toggleMobileMenu()" type="button">
-                        <span class="material-symbols-outlined">menu</span>
-                    </button>
-                </div>
+    <nav
+      class="fixed top-0 w-full z-50 border-b border-brand-border transition-all duration-300 shadow-lg bg-brand-dark/90"
+      id="navbar"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <div
+            class="flex-shrink-0 flex items-center space-x-2 cursor-pointer"
+            onclick="window.scrollTo(0,0)"
+          >
+            <span
+              class="font-mono text-xl font-bold tracking-tighter text-brand-white"
+              >herzinger-<span class="text-brand-cyan">ai</span></span
+            >
+          </div>
+          <div class="hidden md:block">
+            <div class="ml-10 flex items-center space-x-4">
+              <a
+                class="hover:text-brand-cyan transition-colors px-3 py-2 rounded-md text-sm font-medium"
+                href="#about"
+              >
+                <span class="lang-de">Über mich</span
+                ><span class="lang-en">About</span>
+              </a>
+              <a
+                class="hover:text-brand-cyan transition-colors px-3 py-2 rounded-md text-sm font-medium"
+                href="#solutions"
+              >
+                <span class="lang-de">Lösungen</span
+                ><span class="lang-en">Solutions</span>
+              </a>
+              <a
+                class="hover:text-brand-cyan transition-colors px-3 py-2 rounded-md text-sm font-medium"
+                href="#projects"
+              >
+                <span class="lang-de">Projekte</span
+                ><span class="lang-en">Work</span>
+              </a>
+              <!-- Theme Toggle -->
+              <button
+                class="flex items-center justify-center w-8 h-8 rounded-full bg-brand-gray/50 hover:bg-brand-cyan/20 text-brand-cyan transition-all border border-brand-border"
+                onclick="toggleTheme()"
+                title="Toggle Theme"
+              >
+                <span class="material-symbols-outlined text-sm" id="theme-icon"
+                  >light_mode</span
+                >
+              </button>
+              <!-- Language Toggle -->
+              <button
+                class="flex items-center gap-1 text-brand-muted hover:text-brand-white transition-colors px-3 py-2 rounded-md text-sm font-medium border border-brand-border hover:border-brand-cyan/50 min-w-[60px] justify-center"
+                onclick="toggleLanguage()"
+              >
+                <span class="lang-de font-bold text-brand-cyan">DE</span
+                ><span class="lang-de text-xs">/EN</span>
+                <span class="lang-en font-bold text-brand-cyan">EN</span
+                ><span class="lang-en text-xs">/DE</span>
+              </button>
+              <!-- View Source -->
+              <button
+                class="flex items-center gap-1 text-brand-muted hover:text-brand-white transition-colors px-3 py-2 rounded-md text-sm font-medium border border-brand-border hover:border-brand-cyan/50"
+                onclick="openSourceModal()"
+              >
+                <span class="material-symbols-outlined text-xs">code</span>
+              </button>
+              <a
+                class="bg-brand-cyan/10 border border-brand-cyan text-brand-cyan hover:bg-brand-cyan hover:text-brand-dark transition-all px-4 py-2 rounded-full text-sm font-bold"
+                href="#contact"
+              >
+                <span class="lang-de">Kontakt</span
+                ><span class="lang-en">Contact</span>
+              </a>
             </div>
+          </div>
+          <!-- Mobile menu button -->
+          <div class="-mr-2 flex md:hidden items-center gap-2">
+            <button
+              class="flex items-center justify-center w-8 h-8 rounded-full bg-brand-gray/50 text-brand-cyan border border-brand-border"
+              onclick="toggleTheme()"
+            >
+              <span class="material-symbols-outlined text-sm">light_mode</span>
+            </button>
+            <button
+              class="flex items-center gap-1 text-brand-muted px-2 py-1 rounded border border-brand-border"
+              onclick="toggleLanguage()"
+            >
+              <span class="lang-de font-bold text-brand-cyan">DE</span>
+              <span class="lang-en font-bold text-brand-cyan">EN</span>
+            </button>
+            <button
+              class="inline-flex items-center justify-center p-2 rounded-md text-brand-cyan hover:bg-brand-gray focus:outline-none"
+              onclick="toggleMobileMenu()"
+              type="button"
+            >
+              <span class="material-symbols-outlined">menu</span>
+            </button>
+          </div>
         </div>
-        <!-- Mobile Menu -->
-        <div class="md:hidden hidden bg-brand-dark border-b border-brand-border" id="mobile-menu">
-            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <a class="text-brand-white block px-3 py-2 rounded-md text-base font-medium" href="#about">
-                    <span class="lang-de">Über mich</span><span class="lang-en">About</span>
-                </a>
-                <a class="text-brand-white block px-3 py-2 rounded-md text-base font-medium" href="#solutions">
-                    <span class="lang-de">Lösungen</span><span class="lang-en">Solutions</span>
-                </a>
-                <a class="text-brand-white block px-3 py-2 rounded-md text-base font-medium" href="#projects">
-                    <span class="lang-de">Projekte</span><span class="lang-en">Work</span>
-                </a>
-                <button class="text-brand-white w-full text-left flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium" onclick="openSourceModal()">
-                    <span class="material-symbols-outlined text-sm">code</span> View Source
-                </button>
-                <a class="text-brand-cyan font-bold block px-3 py-2 rounded-md text-base font-medium" href="#contact">
-                    <span class="lang-de">Kontakt</span><span class="lang-en">Contact</span>
-                </a>
-            </div>
+      </div>
+      <!-- Mobile Menu -->
+      <div
+        class="md:hidden hidden bg-brand-dark border-b border-brand-border"
+        id="mobile-menu"
+      >
+        <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+          <a
+            class="text-brand-white block px-3 py-2 rounded-md text-base font-medium"
+            href="#about"
+          >
+            <span class="lang-de">Über mich</span
+            ><span class="lang-en">About</span>
+          </a>
+          <a
+            class="text-brand-white block px-3 py-2 rounded-md text-base font-medium"
+            href="#solutions"
+          >
+            <span class="lang-de">Lösungen</span
+            ><span class="lang-en">Solutions</span>
+          </a>
+          <a
+            class="text-brand-white block px-3 py-2 rounded-md text-base font-medium"
+            href="#projects"
+          >
+            <span class="lang-de">Projekte</span
+            ><span class="lang-en">Work</span>
+          </a>
+          <button
+            class="text-brand-white w-full text-left flex items-center gap-2 px-3 py-2 rounded-md text-base font-medium"
+            onclick="openSourceModal()"
+          >
+            <span class="material-symbols-outlined text-sm">code</span> View
+            Source
+          </button>
+          <a
+            class="text-brand-cyan font-bold block px-3 py-2 rounded-md text-base font-medium"
+            href="#contact"
+          >
+            <span class="lang-de">Kontakt</span
+            ><span class="lang-en">Contact</span>
+          </a>
         </div>
+      </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="relative z-10 min-h-screen flex items-center justify-center pt-24 pb-12 animate-fade-in-up" id="hero">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center text-center">
-            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-cyan/10 border border-brand-cyan/30 text-brand-cyan text-sm font-mono tracking-widest uppercase mb-6 backdrop-blur-md">
-                <span class="relative flex h-2 w-2">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-cyan opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-cyan"></span>
-                </span>
-                <span class="lang-de">Freelance KI-Ingenieur</span>
-                <span class="lang-en">Freelance AI Engineer</span>
-            </div>
-            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight text-brand-white mb-8 max-w-4xl">
-                <span class="lang-de">Ingenieurskunst für <br><span class="gradient-text">Ihren KI-Vorteil</span></span>
-                <span class="lang-en">Engineering <br><span class="gradient-text">Your AI Advantage</span></span>
-            </h1>
-            <div class="text-xl text-brand-muted max-w-2xl leading-relaxed mb-10">
-                <p class="lang-de">
-                    Ich bin <span class="text-brand-white font-bold">Andreas Herzinger</span>. Als Freelancer und KI-Partner helfe ich Unternehmen, ihr Potenzial durch maßgeschneiderte <span class="text-brand-cyan">Generative-AI</span> Agenten und funktionierende Automatisierungen zu entfalten.
-                </p>
-                <p class="lang-en">
-                    I'm <span class="text-brand-white font-bold">Andreas Herzinger</span>. As a freelancer and AI partner, I help businesses unlock their potential by building custom <span class="text-brand-cyan">Generative AI</span> agents and automations that actually work.
-                </p>
-            </div>
-            <div class="flex flex-wrap gap-4 justify-center">
-                <a class="group relative px-8 py-4 bg-brand-cyan text-brand-dark font-bold text-lg rounded-lg overflow-hidden transition-all hover:scale-105 hover:neon-glow" href="#contact">
-                    <span class="relative z-10 flex items-center gap-2">
-                        <span class="lang-de">Zusammenarbeiten</span><span class="lang-en">Let's Collaborate</span>
-                        <span class="material-symbols-outlined text-sm transition-transform group-hover:translate-x-1">handshake</span>
-                    </span>
-                </a>
-                <a class="px-8 py-4 glass-panel text-brand-white font-bold rounded-lg hover:bg-brand-white/5 transition-all flex items-center gap-2 text-lg" href="#projects">
-                    <span class="lang-de">Portfolio ansehen</span><span class="lang-en">View Portfolio</span>
-                </a>
-            </div>
+    <section
+      class="relative z-10 min-h-screen flex items-center justify-center pt-24 pb-12 animate-fade-in-up"
+      id="hero"
+    >
+      <div
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center text-center"
+      >
+        <div
+          class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-cyan/10 border border-brand-cyan/30 text-brand-cyan text-sm font-mono tracking-widest uppercase mb-6 backdrop-blur-md"
+        >
+          <span class="relative flex h-2 w-2">
+            <span
+              class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-cyan opacity-75"
+            ></span>
+            <span
+              class="relative inline-flex rounded-full h-2 w-2 bg-brand-cyan"
+            ></span>
+          </span>
+          <span class="lang-de">Freelance KI-Ingenieur</span>
+          <span class="lang-en">Freelance AI Engineer</span>
         </div>
-        <!-- Scroll Indicator -->
-        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce cursor-pointer opacity-50 hover:opacity-100 transition-opacity" onclick="document.getElementById('about').scrollIntoView({behavior: 'smooth'})">
-            <span class="text-xs font-mono uppercase tracking-widest text-brand-cyan">Scroll</span>
-            <span class="material-symbols-outlined text-brand-cyan">expand_more</span>
+        <h1
+          class="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight text-brand-white mb-8 max-w-4xl"
+        >
+          <span class="lang-de"
+            >Ingenieurskunst für <br /><span class="gradient-text"
+              >Ihren KI-Vorteil</span
+            ></span
+          >
+          <span class="lang-en"
+            >Engineering <br /><span class="gradient-text"
+              >Your AI Advantage</span
+            ></span
+          >
+        </h1>
+        <div class="text-xl text-brand-muted max-w-2xl leading-relaxed mb-10">
+          <p class="lang-de">
+            Ich bin
+            <span class="text-brand-white font-bold">Andreas Herzinger</span>.
+            Als Freelancer und KI-Partner helfe ich Unternehmen, ihr Potenzial
+            durch maßgeschneiderte
+            <span class="text-brand-cyan">Generative-AI</span> Agenten und
+            funktionierende Automatisierungen zu entfalten.
+          </p>
+          <p class="lang-en">
+            I'm
+            <span class="text-brand-white font-bold">Andreas Herzinger</span>.
+            As a freelancer and AI partner, I help businesses unlock their
+            potential by building custom
+            <span class="text-brand-cyan">Generative AI</span> agents and
+            automations that actually work.
+          </p>
         </div>
+        <div class="flex flex-wrap gap-4 justify-center">
+          <a
+            class="group relative px-8 py-4 bg-brand-cyan text-brand-dark font-bold text-lg rounded-lg overflow-hidden transition-all hover:scale-105 hover:neon-glow"
+            href="#contact"
+          >
+            <span class="relative z-10 flex items-center gap-2">
+              <span class="lang-de">Zusammenarbeiten</span
+              ><span class="lang-en">Let's Collaborate</span>
+              <span
+                class="material-symbols-outlined text-sm transition-transform group-hover:translate-x-1"
+                >handshake</span
+              >
+            </span>
+          </a>
+          <a
+            class="px-8 py-4 glass-panel text-brand-white font-bold rounded-lg hover:bg-brand-white/5 transition-all flex items-center gap-2 text-lg"
+            href="#projects"
+          >
+            <span class="lang-de">Portfolio ansehen</span
+            ><span class="lang-en">View Portfolio</span>
+          </a>
+        </div>
+      </div>
+      <!-- Scroll Indicator -->
+      <div
+        class="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce cursor-pointer opacity-50 hover:opacity-100 transition-opacity"
+        onclick="document.getElementById('about').scrollIntoView({behavior: 'smooth'})"
+      >
+        <span
+          class="text-xs font-mono uppercase tracking-widest text-brand-cyan"
+          >Scroll</span
+        >
+        <span class="material-symbols-outlined text-brand-cyan"
+          >expand_more</span
+        >
+      </div>
     </section>
 
     <!-- About Section -->
     <section class="py-24 relative z-10 animate-fade-in-up" id="about">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4 text-brand-white">
-                    <span class="lang-de">Ihr <span class="text-brand-cyan">Technischer Partner</span></span>
-                    <span class="lang-en">Your <span class="text-brand-cyan">Technical Partner</span></span>
-                </h2>
-                <div class="h-1 w-20 bg-brand-cyan mx-auto rounded-full"></div>
-            </div>
-            <div class="glass-panel p-8 md:p-12 rounded-2xl border border-brand-cyan/10 relative overflow-hidden">
-                <!-- Background decoration -->
-                <div class="absolute top-0 right-0 p-4 opacity-10">
-                    <span class="material-symbols-outlined text-9xl text-brand-muted">handshake</span>
-                </div>
-                <div class="relative z-10 flex flex-col md:flex-row gap-8 items-center md:items-start">
-                    <div class="flex-1 space-y-4 text-brand-muted leading-relaxed">
-                        <div class="lang-de">
-                            <p class="text-lg">
-                                Hallo! Ich bin <span class="text-brand-white font-semibold">Andreas Herzinger</span>, ein unabhängiger Generative AI Engineer.
-                            </p>
-                            <p>
-                                Ich agiere als spezialisierte "One-Man-Agency" und arbeite direkt mit Unternehmen zusammen, um <span class="text-brand-teal font-mono">Custom AI Agents</span> und <span class="text-brand-teal font-mono">RAG-Architekturen</span> zu entwerfen und bereitzustellen. Mein Ziel ist es, komplexe Prozesse zu automatisieren und Ihre Daten nutzbar zu machen.
-                            </p>
-                            <p class="text-sm italic border-l-2 border-brand-gray pl-4 text-brand-muted">
-                                *Obwohl ich einen starken Hintergrund in der Entwicklung mobiler Apps habe, konzentriere ich mich jetzt ausschließlich auf den Aufbau der KI-Systeme, die moderne Software-Ökosysteme antreiben.*
-                            </p>
-                        </div>
-                        <div class="lang-en">
-                            <p class="text-lg">
-                                Hello! I'm <span class="text-brand-white font-semibold">Andreas Herzinger</span>, an independent Generative AI Engineer.
-                            </p>
-                            <p>
-                                I operate as a specialized "agency of one," partnering directly with businesses to design and deploy <span class="text-brand-teal font-mono">Custom AI Agents</span> and <span class="text-brand-teal font-mono">RAG Architectures</span>. My goal is to help you automate complex processes and make your data actionable.
-                            </p>
-                            <p class="text-sm italic border-l-2 border-brand-gray pl-4 text-brand-muted">
-                                *While I have a strong background in mobile app development, I now focus exclusively on building the AI brains that power modern software ecosystems.*
-                            </p>
-                        </div>
-                        <div class="pt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div class="flex items-center gap-3">
-                                <span class="material-symbols-outlined text-brand-cyan">location_on</span>
-                                <span class="text-sm text-brand-white">Tyrol, Austria</span>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <span class="material-symbols-outlined text-brand-cyan">translate</span>
-                                <span class="text-sm text-brand-white">German / English (C1)</span>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <span class="material-symbols-outlined text-brand-cyan">rocket_launch</span>
-                                <span class="text-sm lang-de text-brand-white">Freelance Verfügbar</span>
-                                <span class="text-sm lang-en text-brand-white">Freelance Available</span>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <span class="material-symbols-outlined text-brand-cyan">school</span>
-                                <span class="text-sm lang-de text-brand-white">B.Sc. Universität Innsbruck</span>
-                                <span class="text-sm lang-en text-brand-white">B.Sc. University of Innsbruck</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <div class="max-w-4xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-bold mb-4 text-brand-white">
+            <span class="lang-de"
+              >Ihr
+              <span class="text-brand-cyan">Technischer Partner</span></span
+            >
+            <span class="lang-en"
+              >Your <span class="text-brand-cyan">Technical Partner</span></span
+            >
+          </h2>
+          <div class="h-1 w-20 bg-brand-cyan mx-auto rounded-full"></div>
         </div>
+        <div
+          class="glass-panel p-8 md:p-12 rounded-2xl border border-brand-cyan/10 relative overflow-hidden"
+        >
+          <!-- Background decoration -->
+          <div class="absolute top-0 right-0 p-4 opacity-10">
+            <span class="material-symbols-outlined text-9xl text-brand-muted"
+              >handshake</span
+            >
+          </div>
+          <div
+            class="relative z-10 flex flex-col md:flex-row gap-8 items-center md:items-start"
+          >
+            <!-- Profile Image -->
+            <div class="flex-shrink-0 w-full md:w-64 mb-6 md:mb-0">
+              <img
+                src="src/assets/profile.jpeg"
+                alt="Andreas Herzinger"
+                class="w-full h-auto rounded-2xl border-2 border-brand-cyan/20 shadow-lg object-cover aspect-[3/4]"
+              />
+            </div>
+            <div class="flex-1 space-y-4 text-brand-muted leading-relaxed">
+              <div class="lang-de">
+                <p class="text-lg">
+                  Hallo! Ich bin
+                  <span class="text-brand-white font-semibold"
+                    >Andreas Herzinger</span
+                  >, ein unabhängiger Generative AI Engineer.
+                </p>
+                <p>
+                  Ich agiere als spezialisierte "One-Man-Agency" und arbeite
+                  direkt mit Unternehmen zusammen, um
+                  <span class="text-brand-teal font-mono"
+                    >Custom AI Agents</span
+                  >
+                  und
+                  <span class="text-brand-teal font-mono"
+                    >RAG-Architekturen</span
+                  >
+                  zu entwerfen und bereitzustellen. Mein Ziel ist es, komplexe
+                  Prozesse zu automatisieren und Ihre Daten nutzbar zu machen.
+                </p>
+                <p
+                  class="text-sm italic border-l-2 border-brand-gray pl-4 text-brand-muted"
+                >
+                  *Obwohl ich einen starken Hintergrund in der Entwicklung
+                  mobiler Apps habe, konzentriere ich mich jetzt ausschließlich
+                  auf den Aufbau der KI-Systeme, die moderne Software-Ökosysteme
+                  antreiben.*
+                </p>
+              </div>
+              <div class="lang-en">
+                <p class="text-lg">
+                  Hello! I'm
+                  <span class="text-brand-white font-semibold"
+                    >Andreas Herzinger</span
+                  >, an independent Generative AI Engineer.
+                </p>
+                <p>
+                  I operate as a specialized "agency of one," partnering
+                  directly with businesses to design and deploy
+                  <span class="text-brand-teal font-mono"
+                    >Custom AI Agents</span
+                  >
+                  and
+                  <span class="text-brand-teal font-mono"
+                    >RAG Architectures</span
+                  >. My goal is to help you automate complex processes and make
+                  your data actionable.
+                </p>
+                <p
+                  class="text-sm italic border-l-2 border-brand-gray pl-4 text-brand-muted"
+                >
+                  *While I have a strong background in mobile app development, I
+                  now focus exclusively on building the AI brains that power
+                  modern software ecosystems.*
+                </p>
+              </div>
+              <div class="pt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="flex items-center gap-3">
+                  <span class="material-symbols-outlined text-brand-cyan"
+                    >location_on</span
+                  >
+                  <span class="text-sm text-brand-white">Tyrol, Austria</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="material-symbols-outlined text-brand-cyan"
+                    >translate</span
+                  >
+                  <span class="text-sm text-brand-white"
+                    >German / English (C1)</span
+                  >
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="material-symbols-outlined text-brand-cyan"
+                    >rocket_launch</span
+                  >
+                  <span class="text-sm lang-de text-brand-white"
+                    >Freelance Verfügbar</span
+                  >
+                  <span class="text-sm lang-en text-brand-white"
+                    >Freelance Available</span
+                  >
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="material-symbols-outlined text-brand-cyan"
+                    >school</span
+                  >
+                  <span class="text-sm lang-de text-brand-white"
+                    >B.Sc. Universität Innsbruck</span
+                  >
+                  <span class="text-sm lang-en text-brand-white"
+                    >B.Sc. University of Innsbruck</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- Solutions / Services -->
-    <section class="py-24 bg-brand-dark/50 relative z-10 animate-fade-in-up" id="solutions">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="mb-16 md:flex md:justify-between md:items-end">
-                <div>
-                    <h2 class="text-3xl md:text-4xl font-bold mb-2 text-brand-white">
-                        <span class="lang-de">Freelance <span class="text-brand-cyan">Lösungen</span></span>
-                        <span class="lang-en">Freelance <span class="text-brand-cyan">Solutions</span></span>
-                    </h2>
-                    <p class="text-brand-muted">
-                        <span class="lang-de">Maßgeschneiderte KI-Implementierung für Ihr Unternehmen.</span>
-                        <span class="lang-en">Tailored AI implementation services for your business.</span>
-                    </p>
-                </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Generative AI Card (Primary) -->
-                <div class="group glass-panel p-8 rounded-2xl hover:border-brand-cyan/50 transition-all duration-300 hover:-translate-y-2 border-brand-cyan/30 shadow-[0_0_20px_rgba(102,252,241,0.1)]">
-                    <div class="w-14 h-14 bg-brand-cyan/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-cyan/20 transition-colors">
-                        <span class="material-symbols-outlined text-3xl text-brand-cyan">psychology_alt</span>
-                    </div>
-                    <h3 class="text-xl font-bold mb-4 text-brand-white">
-                        <span class="lang-de">Maßgeschneiderte KI-Agenten</span>
-                        <span class="lang-en">Custom AI Agents</span>
-                    </h3>
-                    <p class="text-xs text-brand-muted mb-4 h-12">
-                        <span class="lang-de">Ich baue intelligente Agenten, die sicher mit Ihren Daten chatten und Ihr Team unterstützen.</span>
-                        <span class="lang-en">I build intelligent agents that chat with your data and assist your team securely.</span>
-                    </p>
-                    <ul class="space-y-3">
-                        <li class="flex items-center justify-between">
-                            <span class="text-brand-white">RAG Pipelines</span>
-                            <span class="text-xs bg-brand-cyan/10 text-brand-cyan px-2 py-1 rounded">Specialist</span>
-                        </li>
-                        <li class="flex items-center justify-between">
-                            <span class="text-brand-white">LangChain Dev</span>
-                            <span class="text-xs bg-brand-cyan/10 text-brand-cyan px-2 py-1 rounded">Expert</span>
-                        </li>
-                        <li class="flex items-center justify-between">
-                            <span class="text-brand-white">Voice Agents (Vapi)</span>
-                            <span class="text-xs bg-brand-cyan/10 text-brand-cyan px-2 py-1 rounded">Expert</span>
-                        </li>
-                    </ul>
-                </div>
-                <!-- Automation Card -->
-                <div class="group glass-panel p-8 rounded-2xl hover:border-brand-cyan/50 transition-all duration-300 hover:-translate-y-2">
-                    <div class="w-14 h-14 bg-brand-cyan/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-cyan/20 transition-colors">
-                        <span class="material-symbols-outlined text-3xl text-brand-cyan">settings</span>
-                    </div>
-                    <h3 class="text-xl font-bold mb-4 text-brand-white">
-                        <span class="lang-de">Workflow Automatisierung</span>
-                        <span class="lang-en">Workflow Automation</span>
-                    </h3>
-                    <p class="text-xs text-brand-muted mb-4 h-12">
-                        <span class="lang-de">Ich verbinde Ihre bestehenden Tools mit KI, automatisiere repetitive Aufgaben und schaffe Freiräume.</span>
-                        <span class="lang-en">I connect your existing tools to AI, automating repetitive tasks and freeing up your time.</span>
-                    </p>
-                    <ul class="space-y-3">
-                        <li class="flex items-center justify-between">
-                            <span class="text-brand-white">n8n Workflows</span>
-                            <span class="text-xs bg-brand-cyan/10 text-brand-cyan px-2 py-1 rounded">Specialist</span>
-                        </li>
-                        <li class="flex items-center justify-between">
-                            <span class="text-brand-white">API Integrations</span>
-                            <span class="text-xs bg-brand-cyan/10 text-brand-cyan px-2 py-1 rounded">Specialist</span>
-                        </li>
-                        <li class="flex items-center justify-between">
-                            <span class="text-brand-white">Twilio / SMS</span>
-                            <span class="text-xs bg-brand-cyan/10 text-brand-cyan px-2 py-1 rounded">Expert</span>
-                        </li>
-                    </ul>
-                </div>
-                <!-- Foundation Card -->
-                <div class="group glass-panel p-8 rounded-2xl hover:border-brand-cyan/50 transition-all duration-300 hover:-translate-y-2 opacity-90 hover:opacity-100">
-                    <div class="w-14 h-14 bg-brand-gray rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-dark transition-colors">
-                        <span class="material-symbols-outlined text-3xl text-brand-muted">layers</span>
-                    </div>
-                    <h3 class="text-xl font-bold mb-4 text-brand-white">
-                        <span class="lang-de">Solides Engineering</span>
-                        <span class="lang-en">Solid Engineering</span>
-                    </h3>
-                    <p class="text-xs text-brand-muted mb-4 h-12">
-                        <span class="lang-de">Mein Hintergrund in Software-Engineering garantiert robuste, skalierbare und sichere KI-Lösungen.</span>
-                        <span class="lang-en">My software engineering background ensures that the AI I build is robust, scalable, and secure.</span>
-                    </p>
-                    <ul class="space-y-3">
-                        <li class="flex items-center justify-between">
-                            <span class="text-brand-muted">Flutter / Mobile</span>
-                            <span class="text-xs border border-brand-border text-brand-muted px-2 py-1 rounded">Background</span>
-                        </li>
-                        <li class="flex items-center justify-between">
-                            <span class="text-brand-white">Git / CI/CD</span>
-                            <span class="text-xs bg-brand-cyan/10 text-brand-cyan px-2 py-1 rounded">Expert</span>
-                        </li>
-                        <li class="flex items-center justify-between">
-                            <span class="text-brand-white">Cloud Deployment</span>
-                            <span class="text-xs bg-brand-gray text-brand-white px-2 py-1 rounded">Advanced</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+    <section
+      class="py-24 bg-brand-dark/50 relative z-10 animate-fade-in-up"
+      id="solutions"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="mb-16 md:flex md:justify-between md:items-end">
+          <div>
+            <h2 class="text-3xl md:text-4xl font-bold mb-2 text-brand-white">
+              <span class="lang-de"
+                >Freelance <span class="text-brand-cyan">Lösungen</span></span
+              >
+              <span class="lang-en"
+                >Freelance <span class="text-brand-cyan">Solutions</span></span
+              >
+            </h2>
+            <p class="text-brand-muted">
+              <span class="lang-de"
+                >Maßgeschneiderte KI-Implementierung für Ihr Unternehmen.</span
+              >
+              <span class="lang-en"
+                >Tailored AI implementation services for your business.</span
+              >
+            </p>
+          </div>
         </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- Generative AI Card (Primary) -->
+          <div
+            class="group glass-panel p-8 rounded-2xl hover:border-brand-cyan/50 transition-all duration-300 hover:-translate-y-2 border-brand-cyan/30 shadow-[0_0_20px_rgba(102,252,241,0.1)]"
+          >
+            <div
+              class="w-14 h-14 bg-brand-cyan/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-cyan/20 transition-colors"
+            >
+              <span class="material-symbols-outlined text-3xl text-brand-cyan"
+                >psychology_alt</span
+              >
+            </div>
+            <h3 class="text-xl font-bold mb-4 text-brand-white">
+              <span class="lang-de">Maßgeschneiderte KI-Agenten</span>
+              <span class="lang-en">Custom AI Agents</span>
+            </h3>
+            <p class="text-xs text-brand-muted mb-4 h-12">
+              <span class="lang-de"
+                >Ich baue intelligente Agenten, die sicher mit Ihren Daten
+                chatten und Ihr Team unterstützen.</span
+              >
+              <span class="lang-en"
+                >I build intelligent agents that chat with your data and assist
+                your team securely.</span
+              >
+            </p>
+            <ul class="space-y-3">
+              <li class="flex items-center justify-between">
+                <span class="text-brand-white">RAG Pipelines</span>
+                <span
+                  class="text-xs bg-brand-cyan/10 text-brand-cyan px-2 py-1 rounded"
+                  >Specialist</span
+                >
+              </li>
+              <li class="flex items-center justify-between">
+                <span class="text-brand-white">LangChain Dev</span>
+                <span
+                  class="text-xs bg-brand-cyan/10 text-brand-cyan px-2 py-1 rounded"
+                  >Expert</span
+                >
+              </li>
+              <li class="flex items-center justify-between">
+                <span class="text-brand-white">Voice Agents (Vapi)</span>
+                <span
+                  class="text-xs bg-brand-cyan/10 text-brand-cyan px-2 py-1 rounded"
+                  >Expert</span
+                >
+              </li>
+            </ul>
+          </div>
+          <!-- Automation Card -->
+          <div
+            class="group glass-panel p-8 rounded-2xl hover:border-brand-cyan/50 transition-all duration-300 hover:-translate-y-2"
+          >
+            <div
+              class="w-14 h-14 bg-brand-cyan/10 rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-cyan/20 transition-colors"
+            >
+              <span class="material-symbols-outlined text-3xl text-brand-cyan"
+                >settings</span
+              >
+            </div>
+            <h3 class="text-xl font-bold mb-4 text-brand-white">
+              <span class="lang-de">Workflow Automatisierung</span>
+              <span class="lang-en">Workflow Automation</span>
+            </h3>
+            <p class="text-xs text-brand-muted mb-4 h-12">
+              <span class="lang-de"
+                >Ich verbinde Ihre bestehenden Tools mit KI, automatisiere
+                repetitive Aufgaben und schaffe Freiräume.</span
+              >
+              <span class="lang-en"
+                >I connect your existing tools to AI, automating repetitive
+                tasks and freeing up your time.</span
+              >
+            </p>
+            <ul class="space-y-3">
+              <li class="flex items-center justify-between">
+                <span class="text-brand-white">n8n Workflows</span>
+                <span
+                  class="text-xs bg-brand-cyan/10 text-brand-cyan px-2 py-1 rounded"
+                  >Specialist</span
+                >
+              </li>
+              <li class="flex items-center justify-between">
+                <span class="text-brand-white">API Integrations</span>
+                <span
+                  class="text-xs bg-brand-cyan/10 text-brand-cyan px-2 py-1 rounded"
+                  >Specialist</span
+                >
+              </li>
+              <li class="flex items-center justify-between">
+                <span class="text-brand-white">Twilio / SMS</span>
+                <span
+                  class="text-xs bg-brand-cyan/10 text-brand-cyan px-2 py-1 rounded"
+                  >Expert</span
+                >
+              </li>
+            </ul>
+          </div>
+          <!-- Foundation Card -->
+          <div
+            class="group glass-panel p-8 rounded-2xl hover:border-brand-cyan/50 transition-all duration-300 hover:-translate-y-2 opacity-90 hover:opacity-100"
+          >
+            <div
+              class="w-14 h-14 bg-brand-gray rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-dark transition-colors"
+            >
+              <span class="material-symbols-outlined text-3xl text-brand-muted"
+                >layers</span
+              >
+            </div>
+            <h3 class="text-xl font-bold mb-4 text-brand-white">
+              <span class="lang-de">Solides Engineering</span>
+              <span class="lang-en">Solid Engineering</span>
+            </h3>
+            <p class="text-xs text-brand-muted mb-4 h-12">
+              <span class="lang-de"
+                >Mein Hintergrund in Software-Engineering garantiert robuste,
+                skalierbare und sichere KI-Lösungen.</span
+              >
+              <span class="lang-en"
+                >My software engineering background ensures that the AI I build
+                is robust, scalable, and secure.</span
+              >
+            </p>
+            <ul class="space-y-3">
+              <li class="flex items-center justify-between">
+                <span class="text-brand-muted">Flutter / Mobile</span>
+                <span
+                  class="text-xs border border-brand-border text-brand-muted px-2 py-1 rounded"
+                  >Background</span
+                >
+              </li>
+              <li class="flex items-center justify-between">
+                <span class="text-brand-white">Git / CI/CD</span>
+                <span
+                  class="text-xs bg-brand-cyan/10 text-brand-cyan px-2 py-1 rounded"
+                  >Expert</span
+                >
+              </li>
+              <li class="flex items-center justify-between">
+                <span class="text-brand-white">Cloud Deployment</span>
+                <span
+                  class="text-xs bg-brand-gray text-brand-white px-2 py-1 rounded"
+                  >Advanced</span
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- Projects Section -->
     <section class="py-24 relative z-10 animate-fade-in-up" id="projects">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Header & Filter -->
-            <div class="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6">
-                <div>
-                    <h2 class="text-3xl md:text-4xl font-bold mb-2 text-brand-white">
-                        <span class="lang-de">Ausgewählte <span class="text-brand-cyan">Implementierungen</span></span>
-                        <span class="lang-en">Featured <span class="text-brand-cyan">Implementations</span></span>
-                    </h2>
-                    <p class="text-brand-muted">
-                        <span class="lang-de">KI-Architekturen und vergangene Engineering-Projekte.</span>
-                        <span class="lang-en">Showcase of AI architectures and past engineering projects.</span>
-                    </p>
-                </div>
-                <!-- Filters -->
-                <div class="flex flex-wrap gap-2 p-1 glass-panel rounded-lg self-start">
-                    <button class="filter-btn active px-4 py-2 rounded-md text-sm font-medium transition-all bg-brand-cyan text-brand-dark" onclick="filterProjects('all', this)">All</button>
-                    <button class="filter-btn px-4 py-2 rounded-md text-sm font-medium text-brand-muted hover:text-brand-white transition-all" onclick="filterProjects('ai', this)">AI / RAG</button>
-                    <button class="filter-btn px-4 py-2 rounded-md text-sm font-medium text-brand-muted hover:text-brand-white transition-all" onclick="filterProjects('mobile', this)">
-                        <span class="lang-de">Vergangene Projekte</span><span class="lang-en">Previous Work</span>
-                    </button>
-                </div>
-            </div>
-            <!-- Project Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="projects-grid">
-                <!-- Project 1: Rankify (Thesis) -->
-                <div class="project-card ai glass-panel rounded-xl overflow-hidden group border border-transparent hover:border-brand-cyan/30 transition-all duration-500 flex flex-col h-full">
-                    <div class="relative h-48 overflow-hidden">
-                        <img alt="Rankify Framework" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="/gen?prompt=ranking+and+sorting+digital+documents+automation+ai+pipeline+abstract+visualization+cyan+and+blue&amp;aspect=16:9">
-                        <div class="absolute inset-0 bg-brand-dark/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <a class="px-4 py-2 bg-brand-cyan text-brand-dark rounded-full font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform" href="https://github.com/DataScienceUIBK/Rankify" target="_blank">
-                                <span class="lang-de">Code ansehen</span><span class="lang-en">View Code</span>
-                            </a>
-                        </div>
-                        <div class="absolute top-4 right-4 bg-brand-dark/80 backdrop-blur px-3 py-1 rounded-full border border-brand-cyan/20">
-                            <span class="text-xs font-mono text-brand-cyan">Python</span>
-                        </div>
-                    </div>
-                    <div class="p-6 flex-1 flex flex-col">
-                        <h3 class="text-xl font-bold text-brand-white mb-2 group-hover:text-brand-cyan transition-colors">Rankify Framework</h3>
-                        <div class="text-brand-muted text-sm mb-4 flex-1">
-                            <p class="lang-de">Bachelorarbeit zur Erweiterung eines RAG-Frameworks. Implementierung von Chain-of-Thought, Self-Consistency und ReAct-Ansätzen. Integration verschiedener Inferenzpunkte (Hugging Face, OpenAI, LiteLLM).</p>
-                            <p class="lang-en">Bachelor Thesis Project extending a RAG framework. Implemented Chain-of-Thought, Self-Consistency, and ReAct approaches. Integrated multiple inference points including Hugging Face, OpenAI, LiteLLM, and VLLM.</p>
-                        </div>
-                        <div class="flex items-center gap-4 text-sm text-brand-muted pt-4 border-t border-brand-border">
-                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">psychology</span>Generative AI</span>
-                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">school</span>Research</span>
-                        </div>
-                    </div>
-                </div>
-                <!-- Project 4: Federated Learning -->
-                <div class="project-card ai glass-panel rounded-xl overflow-hidden group border border-transparent hover:border-brand-cyan/30 transition-all duration-500 flex flex-col h-full">
-                    <div class="relative h-48 overflow-hidden">
-                        <img alt="Federated Learning System" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="/gen?prompt=network+of+interconnected+devices+sharing+machine+learning+models+without+data+transfer+abstract+nodes+cyan&amp;aspect=16:9">
-                        <div class="absolute inset-0 bg-brand-dark/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <a class="px-4 py-2 bg-brand-cyan text-brand-dark rounded-full font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform" href="#">
-                                <span class="lang-de">Details ansehen</span><span class="lang-en">View Details</span>
-                            </a>
-                        </div>
-                        <div class="absolute top-4 right-4 bg-brand-dark/80 backdrop-blur px-3 py-1 rounded-full border border-brand-cyan/20">
-                            <span class="text-xs font-mono text-brand-cyan">PyTorch</span>
-                        </div>
-                    </div>
-                    <div class="p-6 flex-1 flex flex-col">
-                        <h3 class="text-xl font-bold text-brand-white mb-2 group-hover:text-brand-cyan transition-colors">Federated Transfer Learning</h3>
-                        <div class="text-brand-muted text-sm mb-4 flex-1">
-                            <p class="lang-de">Entwicklung eines datenschutzfreundlichen, dezentralen Trainingsprotokolls mit Transfer Learning. Ermöglicht das Trainieren von KI-Modellen auf verteilten Edge-Geräten.</p>
-                            <p class="lang-en">Development of a privacy-preserving decentralized training protocol using Transfer Learning. Enables training AI models across distributed edge devices.</p>
-                        </div>
-                        <div class="flex items-center gap-4 text-sm text-brand-muted pt-4 border-t border-brand-border">
-                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">hub</span>Distributed AI</span>
-                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">security</span>Privacy</span>
-                        </div>
-                    </div>
-                </div>
-                <!-- Project 2: Fish-Finder -->
-                <div class="project-card mobile glass-panel rounded-xl overflow-hidden group border border-transparent hover:border-brand-muted transition-all duration-500 flex flex-col h-full opacity-90">
-                    <div class="relative h-48 overflow-hidden">
-                        <img alt="Fish-Finder App" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0" src="/gen?prompt=mobile+phone+screen+showing+a+map+with+fishing+markers+and+catch+statistics+clean+ui+interface&amp;aspect=16:9">
-                        <div class="absolute inset-0 bg-brand-dark/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <span class="px-4 py-2 bg-brand-gray text-brand-dark rounded-full font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform">
-                                <span class="lang-de">Vergangenes Projekt</span><span class="lang-en">Past Project</span>
-                            </span>
-                        </div>
-                        <div class="absolute top-4 right-4 bg-brand-dark/80 backdrop-blur px-3 py-1 rounded-full border border-brand-muted">
-                            <span class="text-xs font-mono text-brand-white">Flutter</span>
-                        </div>
-                    </div>
-                    <div class="p-6 flex-1 flex flex-col">
-                        <h3 class="text-xl font-bold text-brand-white mb-2">Fish-Finder <span class="text-xs font-normal border border-brand-muted px-2 rounded ml-2 text-brand-muted">Legacy</span></h3>
-                        <div class="text-brand-muted text-sm mb-4 flex-1">
-                            <p class="lang-de">Eine Mobile App für Fischer mit Google Maps API und Firebase. Zeigt meine Fähigkeit, komplette Produktlebenszyklen zu managen und skalierbare Systeme zu deployen.</p>
-                            <p class="lang-en">A mobile app for fishermen using Google Maps API and Firebase. Demonstrates my ability to manage full product lifecycles and deploy production-ready scalable systems.</p>
-                        </div>
-                        <div class="flex items-center gap-4 text-sm text-brand-muted pt-4 border-t border-brand-border">
-                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">smartphone</span>Mobile App</span>
-                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">map</span>Google Maps</span>
-                        </div>
-                    </div>
-                </div>
-                <!-- Project 3: Us-European Roulette -->
-                <div class="project-card ai glass-panel rounded-xl overflow-hidden group border border-transparent hover:border-brand-cyan/30 transition-all duration-500 flex flex-col h-full">
-                    <div class="relative h-48 overflow-hidden">
-                        <img alt="Roulette Simulation" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="/gen?prompt=elegant+casino+roulette+table+minimalist+design+dark+background+high+quality+photography+style&amp;aspect=16:9">
-                        <div class="absolute inset-0 bg-brand-dark/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <a class="px-4 py-2 bg-brand-cyan text-brand-dark rounded-full font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform" href="https://github.com/aherzinger/Us-European-Roulette" target="_blank">
-                                <span class="lang-de">Code ansehen</span><span class="lang-en">View Code</span>
-                            </a>
-                        </div>
-                        <div class="absolute top-4 right-4 bg-brand-dark/80 backdrop-blur px-3 py-1 rounded-full border border-brand-cyan/20">
-                            <span class="text-xs font-mono text-brand-cyan">Python</span>
-                        </div>
-                    </div>
-                    <div class="p-6 flex-1 flex flex-col">
-                        <h3 class="text-xl font-bold text-brand-white mb-2 group-hover:text-brand-cyan transition-colors">Us-European Roulette</h3>
-                        <div class="text-brand-muted text-sm mb-4 flex-1">
-                            <p class="lang-de">Ein statistisches Simulationsprojekt zur Analyse der Wahrscheinlichkeitsvarianz zwischen amerikanischen und europäischen Roulettetischen mittels Monte-Carlo-Simulationen.</p>
-                            <p class="lang-en">A statistical simulation project analyzing the probability variance between American and European roulette tables using Monte Carlo simulations.</p>
-                        </div>
-                        <div class="flex items-center gap-4 text-sm text-brand-muted pt-4 border-t border-brand-border">
-                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">functions</span>Statistics</span>
-                            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">bar_chart</span>Data Viz</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header & Filter -->
+        <div
+          class="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6"
+        >
+          <div>
+            <h2 class="text-3xl md:text-4xl font-bold mb-2 text-brand-white">
+              <span class="lang-de"
+                >Ausgewählte
+                <span class="text-brand-cyan">Implementierungen</span></span
+              >
+              <span class="lang-en"
+                >Featured
+                <span class="text-brand-cyan">Implementations</span></span
+              >
+            </h2>
+            <p class="text-brand-muted">
+              <span class="lang-de"
+                >KI-Architekturen und vergangene Engineering-Projekte.</span
+              >
+              <span class="lang-en"
+                >Showcase of AI architectures and past engineering
+                projects.</span
+              >
+            </p>
+          </div>
+          <!-- Filters -->
+          <div
+            class="flex flex-wrap gap-2 p-1 glass-panel rounded-lg self-start"
+          >
+            <button
+              class="filter-btn active px-4 py-2 rounded-md text-sm font-medium transition-all bg-brand-cyan text-brand-dark"
+              onclick="filterProjects('all', this)"
+            >
+              All
+            </button>
+            <button
+              class="filter-btn px-4 py-2 rounded-md text-sm font-medium text-brand-muted hover:text-brand-white transition-all"
+              onclick="filterProjects('ai', this)"
+            >
+              AI / RAG
+            </button>
+            <button
+              class="filter-btn px-4 py-2 rounded-md text-sm font-medium text-brand-muted hover:text-brand-white transition-all"
+              onclick="filterProjects('mobile', this)"
+            >
+              <span class="lang-de">Vergangene Projekte</span
+              ><span class="lang-en">Previous Work</span>
+            </button>
+          </div>
         </div>
+        <!-- Project Grid -->
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          id="projects-grid"
+        >
+          <!-- Project 1: Rankify (Thesis) -->
+          <div
+            class="project-card ai glass-panel rounded-xl overflow-hidden group border border-transparent hover:border-brand-cyan/30 transition-all duration-500 flex flex-col h-full"
+          >
+            <div class="relative h-48 overflow-hidden">
+              <img
+                alt="Rankify Framework"
+                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                src="src/assets/rankifiy.png"
+              />
+              <div
+                class="absolute inset-0 bg-brand-dark/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+              >
+                <a
+                  class="px-4 py-2 bg-brand-cyan text-brand-dark rounded-full font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform"
+                  href="https://github.com/DataScienceUIBK/Rankify"
+                  target="_blank"
+                >
+                  <span class="lang-de">Code ansehen</span
+                  ><span class="lang-en">View Code</span>
+                </a>
+              </div>
+              <div
+                class="absolute top-4 right-4 bg-brand-dark/80 backdrop-blur px-3 py-1 rounded-full border border-brand-cyan/20"
+              >
+                <span class="text-xs font-mono text-brand-cyan">Python</span>
+              </div>
+            </div>
+            <div class="p-6 flex-1 flex flex-col">
+              <h3
+                class="text-xl font-bold text-brand-white mb-2 group-hover:text-brand-cyan transition-colors"
+              >
+                Rankify Framework
+              </h3>
+              <div class="text-brand-muted text-sm mb-4 flex-1">
+                <p class="lang-de">
+                  Bachelorarbeit zur Erweiterung eines RAG-Frameworks.
+                  Implementierung von Chain-of-Thought, Self-Consistency und
+                  ReAct-Ansätzen. Integration verschiedener Inferenzpunkte
+                  (Hugging Face, OpenAI, LiteLLM).
+                </p>
+                <p class="lang-en">
+                  Bachelor Thesis Project extending a RAG framework. Implemented
+                  Chain-of-Thought, Self-Consistency, and ReAct approaches.
+                  Integrated multiple inference points including Hugging Face,
+                  OpenAI, LiteLLM, and VLLM.
+                </p>
+              </div>
+              <div
+                class="flex items-center gap-4 text-sm text-brand-muted pt-4 border-t border-brand-border"
+              >
+                <span class="flex items-center gap-1"
+                  ><span class="material-symbols-outlined text-base"
+                    >psychology</span
+                  >Generative AI</span
+                >
+                <span class="flex items-center gap-1"
+                  ><span class="material-symbols-outlined text-base"
+                    >school</span
+                  >Research</span
+                >
+              </div>
+            </div>
+          </div>
+          <!-- Project 4: Federated Learning -->
+          <div
+            class="project-card ai glass-panel rounded-xl overflow-hidden group border border-transparent hover:border-brand-cyan/30 transition-all duration-500 flex flex-col h-full"
+          >
+            <div class="relative h-48 overflow-hidden">
+              <img
+                alt="Federated Learning System"
+                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                src="src/assets/transfer_learning.png"
+              />
+              <div
+                class="absolute inset-0 bg-brand-dark/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+              >
+                <a
+                  class="px-4 py-2 bg-brand-cyan text-brand-dark rounded-full font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform"
+                  href="#"
+                >
+                  <span class="lang-de">Details ansehen</span
+                  ><span class="lang-en">View Details</span>
+                </a>
+              </div>
+              <div
+                class="absolute top-4 right-4 bg-brand-dark/80 backdrop-blur px-3 py-1 rounded-full border border-brand-cyan/20"
+              >
+                <span class="text-xs font-mono text-brand-cyan">PyTorch</span>
+              </div>
+            </div>
+            <div class="p-6 flex-1 flex flex-col">
+              <h3
+                class="text-xl font-bold text-brand-white mb-2 group-hover:text-brand-cyan transition-colors"
+              >
+                Federated Transfer Learning
+              </h3>
+              <div class="text-brand-muted text-sm mb-4 flex-1">
+                <p class="lang-de">
+                  Entwicklung eines datenschutzfreundlichen, dezentralen
+                  Trainingsprotokolls mit Transfer Learning. Ermöglicht das
+                  Trainieren von KI-Modellen auf verteilten Edge-Geräten.
+                </p>
+                <p class="lang-en">
+                  Development of a privacy-preserving decentralized training
+                  protocol using Transfer Learning. Enables training AI models
+                  across distributed edge devices.
+                </p>
+              </div>
+              <div
+                class="flex items-center gap-4 text-sm text-brand-muted pt-4 border-t border-brand-border"
+              >
+                <span class="flex items-center gap-1"
+                  ><span class="material-symbols-outlined text-base">hub</span
+                  >Distributed AI</span
+                >
+                <span class="flex items-center gap-1"
+                  ><span class="material-symbols-outlined text-base"
+                    >security</span
+                  >Privacy</span
+                >
+              </div>
+            </div>
+          </div>
+          <!-- Project 2: Fish-Finder -->
+          <div
+            class="project-card mobile glass-panel rounded-xl overflow-hidden group border border-transparent hover:border-brand-muted transition-all duration-500 flex flex-col h-full opacity-90"
+          >
+            <div class="relative h-48 overflow-hidden">
+              <img
+                alt="Fish-Finder App"
+                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0"
+                src="src/assets/fishfinder.png"
+              />
+              <div
+                class="absolute inset-0 bg-brand-dark/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+              >
+                <span
+                  class="px-4 py-2 bg-brand-gray text-brand-dark rounded-full font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform"
+                >
+                  <span class="lang-de">Vergangenes Projekt</span
+                  ><span class="lang-en">Past Project</span>
+                </span>
+              </div>
+              <div
+                class="absolute top-4 right-4 bg-brand-dark/80 backdrop-blur px-3 py-1 rounded-full border border-brand-muted"
+              >
+                <span class="text-xs font-mono text-brand-white">Flutter</span>
+              </div>
+            </div>
+            <div class="p-6 flex-1 flex flex-col">
+              <h3 class="text-xl font-bold text-brand-white mb-2">
+                Fish-Finder
+                <span
+                  class="text-xs font-normal border border-brand-muted px-2 rounded ml-2 text-brand-muted"
+                  >Legacy</span
+                >
+              </h3>
+              <div class="text-brand-muted text-sm mb-4 flex-1">
+                <p class="lang-de">
+                  Eine Mobile App für Fischer mit Google Maps API und Firebase.
+                  Zeigt meine Fähigkeit, komplette Produktlebenszyklen zu
+                  managen und skalierbare Systeme zu deployen.
+                </p>
+                <p class="lang-en">
+                  A mobile app for fishermen using Google Maps API and Firebase.
+                  Demonstrates my ability to manage full product lifecycles and
+                  deploy production-ready scalable systems.
+                </p>
+              </div>
+              <div
+                class="flex items-center gap-4 text-sm text-brand-muted pt-4 border-t border-brand-border"
+              >
+                <span class="flex items-center gap-1"
+                  ><span class="material-symbols-outlined text-base"
+                    >smartphone</span
+                  >Mobile App</span
+                >
+                <span class="flex items-center gap-1"
+                  ><span class="material-symbols-outlined text-base">map</span
+                  >Google Maps</span
+                >
+              </div>
+            </div>
+          </div>
+          <!-- Project 3: Us-European Roulette -->
+          <div
+            class="project-card ai glass-panel rounded-xl overflow-hidden group border border-transparent hover:border-brand-cyan/30 transition-all duration-500 flex flex-col h-full"
+          >
+            <div class="relative h-48 overflow-hidden">
+              <img
+                alt="Roulette Simulation"
+                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                src="src/assets/roulette.png"
+              />
+              <div
+                class="absolute inset-0 bg-brand-dark/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+              >
+                <a
+                  class="px-4 py-2 bg-brand-cyan text-brand-dark rounded-full font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform"
+                  href="https://github.com/aherzinger/Us-European-Roulette"
+                  target="_blank"
+                >
+                  <span class="lang-de">Code ansehen</span
+                  ><span class="lang-en">View Code</span>
+                </a>
+              </div>
+              <div
+                class="absolute top-4 right-4 bg-brand-dark/80 backdrop-blur px-3 py-1 rounded-full border border-brand-cyan/20"
+              >
+                <span class="text-xs font-mono text-brand-cyan">Python</span>
+              </div>
+            </div>
+            <div class="p-6 flex-1 flex flex-col">
+              <h3
+                class="text-xl font-bold text-brand-white mb-2 group-hover:text-brand-cyan transition-colors"
+              >
+                Us-European Roulette
+              </h3>
+              <div class="text-brand-muted text-sm mb-4 flex-1">
+                <p class="lang-de">
+                  Ein statistisches Simulationsprojekt zur Analyse der
+                  Wahrscheinlichkeitsvarianz zwischen amerikanischen und
+                  europäischen Roulettetischen mittels Monte-Carlo-Simulationen.
+                </p>
+                <p class="lang-en">
+                  A statistical simulation project analyzing the probability
+                  variance between American and European roulette tables using
+                  Monte Carlo simulations.
+                </p>
+              </div>
+              <div
+                class="flex items-center gap-4 text-sm text-brand-muted pt-4 border-t border-brand-border"
+              >
+                <span class="flex items-center gap-1"
+                  ><span class="material-symbols-outlined text-base"
+                    >functions</span
+                  >Statistics</span
+                >
+                <span class="flex items-center gap-1"
+                  ><span class="material-symbols-outlined text-base"
+                    >bar_chart</span
+                  >Data Viz</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- Experience Timeline -->
     <section class="py-20 relative z-10 animate-fade-in-up" id="journey">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6">
-            <h2 class="text-3xl font-bold mb-12 text-center text-brand-white">
-                <span class="lang-de">Mein <span class="text-brand-cyan">Werdegang</span></span>
-                <span class="lang-en">My <span class="text-brand-cyan">Journey</span></span>
-            </h2>
-            <div class="relative border-l-2 border-brand-gray ml-3 md:ml-6 space-y-12">
-                <!-- Item 1 (Freelancing) -->
-                <div class="relative pl-8 md:pl-12">
-                    <span class="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-brand-cyan ring-4 ring-brand-dark shadow-[0_0_10px_rgba(102,252,241,0.5)]"></span>
-                    <div class="glass-panel p-6 rounded-lg border-l-4 border-brand-cyan hover:bg-brand-gray/20 transition-colors">
-                        <div class="flex justify-between items-start mb-1">
-                            <span class="text-brand-cyan font-mono text-xs uppercase tracking-wide">
-                                <span class="lang-de">Sommer 2025 - Heute</span><span class="lang-en">Summer 2025 - Present</span>
-                            </span>
-                            <span class="text-brand-muted text-xs">Remote</span>
-                        </div>
-                        <h3 class="text-lg font-bold text-brand-white">Generative AI Engineer</h3>
-                        <div class="text-brand-teal text-sm font-medium mb-2">ChangeMy.AI &amp; Freelance</div>
-                        <div class="text-brand-muted text-sm mt-2">
-                            <p class="lang-de">Leitender Entwickler für RAG-Systeme und autonome Task-Agenten. Ich orchestriere komplexe Automatisierungspipelines mit n8n, Vapi und Twilio zur Optimierung von Geschäftsprozessen.</p>
-                            <p class="lang-en">Leading the development of RAG systems and autonomous task agents. I help orchestrate complex automation pipelines using n8n, Vapi, and Twilio to streamline business workflows.</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Item 2 (Rankify & Research) -->
-                <div class="relative pl-8 md:pl-12">
-                    <span class="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-brand-gray ring-4 ring-brand-dark"></span>
-                    <div class="glass-panel p-6 rounded-lg border-l-4 border-brand-gray hover:bg-brand-gray/20 transition-colors">
-                        <div class="flex justify-between items-start mb-1">
-                            <span class="text-brand-muted font-mono text-xs uppercase tracking-wide">Jan 2025 - Jun 2025</span>
-                            <span class="text-brand-muted text-xs">Research</span>
-                        </div>
-                        <h3 class="text-lg font-bold text-brand-white">Rankify Framework &amp; NLP Specialization</h3>
-                        <div class="text-brand-muted text-sm font-medium mb-2">
-                            <span class="lang-de">Bachelorarbeit &amp; Forschung</span><span class="lang-en">Bachelor Thesis &amp; Research</span>
-                        </div>
-                        <div class="text-brand-muted text-sm mt-2">
-                            <p class="lang-de">Forschung und Entwicklung eines RAG-Frameworks als Bachelorarbeit. Spezialisierung auf NLP und Data Science im letzten Studienjahr an der Universität Innsbruck.</p>
-                            <p class="lang-en">Research and development of a RAG framework as Bachelor thesis. Specialized in NLP and Data Science during the final year at the University of Innsbruck.</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Item 3 (BSc Education) -->
-                <div class="relative pl-8 md:pl-12">
-                    <span class="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-brand-gray ring-4 ring-brand-dark"></span>
-                    <div class="glass-panel-no-border p-6 rounded-lg hover:bg-brand-gray/20 transition-colors">
-                        <div class="flex justify-between items-start mb-1">
-                            <span class="text-brand-teal font-mono text-xs uppercase tracking-wide">2022 - 2025</span>
-                            <span class="text-brand-muted text-xs"><span class="material-symbols-outlined text-[10px] align-middle">school</span> Education</span>
-                        </div>
-                        <h3 class="text-lg font-bold text-brand-white">
-                            <span class="lang-de">B.Sc. Informatik</span><span class="lang-en">B.Sc. Computer Science</span>
-                        </h3>
-                        <div class="text-brand-muted text-sm font-medium mb-2">
-                            <span class="lang-de">Universität Innsbruck</span><span class="lang-en">University of Innsbruck</span>
-                        </div>
-                        <div class="text-brand-muted text-sm mt-2">
-                            <p class="lang-de">Schwerpunkt Software Engineering. Spezialisierung auf Natural Language Processing (NLP) und Data Science im Abschlussjahr.</p>
-                            <p class="lang-en">Focus on Software Engineering. Specialized in Natural Language Processing (NLP) and Data Science in the final year.</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Item 4 (MatheArena) -->
-                <div class="relative pl-8 md:pl-12">
-                    <span class="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-brand-gray ring-4 ring-brand-dark"></span>
-                    <div class="glass-panel p-6 rounded-lg border-l-4 border-brand-gray hover:bg-brand-gray/20 transition-colors">
-                        <div class="flex justify-between items-start mb-1">
-                            <span class="text-brand-muted font-mono text-xs uppercase tracking-wide">2021 - 2022</span>
-                            <span class="text-brand-muted text-xs">Remote</span>
-                        </div>
-                        <h3 class="text-lg font-bold text-brand-white">Application Developer</h3>
-                        <div class="text-brand-muted text-sm font-medium mb-2">Mathe-Arena</div>
-                        <div class="text-brand-muted text-sm mt-2">
-                            <span class="bg-brand-gray text-brand-white text-[10px] px-1 rounded mr-1">PREVIOUS</span>
-                            <p class="lang-de">Entwicklung plattformübergreifender Mobile Apps mit Flutter. Arbeit an REST-APIs und NoSQL-Datenbankmigrationen.</p>
-                            <p class="lang-en">Built cross-platform mobile applications with Flutter. Worked on REST-APIs and NoSQL database migrations.</p>
-                        </div>
-                    </div>
-                </div>
+      <div class="max-w-4xl mx-auto px-4 sm:px-6">
+        <h2 class="text-3xl font-bold mb-12 text-center text-brand-white">
+          <span class="lang-de"
+            >Mein <span class="text-brand-cyan">Werdegang</span></span
+          >
+          <span class="lang-en"
+            >My <span class="text-brand-cyan">Journey</span></span
+          >
+        </h2>
+        <div
+          class="relative border-l-2 border-brand-gray ml-3 md:ml-6 space-y-12"
+        >
+          <!-- Item 1 (Freelancing) -->
+          <div class="relative pl-8 md:pl-12">
+            <span
+              class="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-brand-cyan ring-4 ring-brand-dark shadow-[0_0_10px_rgba(102,252,241,0.5)]"
+            ></span>
+            <div
+              class="glass-panel p-6 rounded-lg border-l-4 border-brand-cyan hover:bg-brand-gray/20 transition-colors"
+            >
+              <div class="flex justify-between items-start mb-1">
+                <span
+                  class="text-brand-cyan font-mono text-xs uppercase tracking-wide"
+                >
+                  <span class="lang-de">Sommer 2025 - Heute</span
+                  ><span class="lang-en">Summer 2025 - Present</span>
+                </span>
+                <span class="text-brand-muted text-xs">Remote</span>
+              </div>
+              <h3 class="text-lg font-bold text-brand-white">
+                Generative AI Engineer
+              </h3>
+              <div class="text-brand-teal text-sm font-medium mb-2">
+                ChangeMy.AI &amp; Freelance
+              </div>
+              <div class="text-brand-muted text-sm mt-2">
+                <p class="lang-de">
+                  Leitender Entwickler für RAG-Systeme und autonome
+                  Task-Agenten. Ich orchestriere komplexe
+                  Automatisierungspipelines mit n8n, Vapi und Twilio zur
+                  Optimierung von Geschäftsprozessen.
+                </p>
+                <p class="lang-en">
+                  Leading the development of RAG systems and autonomous task
+                  agents. I help orchestrate complex automation pipelines using
+                  n8n, Vapi, and Twilio to streamline business workflows.
+                </p>
+              </div>
             </div>
+          </div>
+          <!-- Item 2 (Rankify & Research) -->
+          <div class="relative pl-8 md:pl-12">
+            <span
+              class="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-brand-gray ring-4 ring-brand-dark"
+            ></span>
+            <div
+              class="glass-panel p-6 rounded-lg border-l-4 border-brand-gray hover:bg-brand-gray/20 transition-colors"
+            >
+              <div class="flex justify-between items-start mb-1">
+                <span
+                  class="text-brand-muted font-mono text-xs uppercase tracking-wide"
+                  >Jan 2025 - Jun 2025</span
+                >
+                <span class="text-brand-muted text-xs">Research</span>
+              </div>
+              <h3 class="text-lg font-bold text-brand-white">
+                Rankify Framework &amp; NLP Specialization
+              </h3>
+              <div class="text-brand-muted text-sm font-medium mb-2">
+                <span class="lang-de">Bachelorarbeit &amp; Forschung</span
+                ><span class="lang-en">Bachelor Thesis &amp; Research</span>
+              </div>
+              <div class="text-brand-muted text-sm mt-2">
+                <p class="lang-de">
+                  Forschung und Entwicklung eines RAG-Frameworks als
+                  Bachelorarbeit. Spezialisierung auf NLP und Data Science im
+                  letzten Studienjahr an der Universität Innsbruck.
+                </p>
+                <p class="lang-en">
+                  Research and development of a RAG framework as Bachelor
+                  thesis. Specialized in NLP and Data Science during the final
+                  year at the University of Innsbruck.
+                </p>
+              </div>
+            </div>
+          </div>
+          <!-- Item 3 (BSc Education) -->
+          <div class="relative pl-8 md:pl-12">
+            <span
+              class="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-brand-gray ring-4 ring-brand-dark"
+            ></span>
+            <div
+              class="glass-panel-no-border p-6 rounded-lg hover:bg-brand-gray/20 transition-colors"
+            >
+              <div class="flex justify-between items-start mb-1">
+                <span
+                  class="text-brand-teal font-mono text-xs uppercase tracking-wide"
+                  >2022 - 2025</span
+                >
+                <span class="text-brand-muted text-xs"
+                  ><span
+                    class="material-symbols-outlined text-[10px] align-middle"
+                    >school</span
+                  >
+                  Education</span
+                >
+              </div>
+              <h3 class="text-lg font-bold text-brand-white">
+                <span class="lang-de">B.Sc. Informatik</span
+                ><span class="lang-en">B.Sc. Computer Science</span>
+              </h3>
+              <div class="text-brand-muted text-sm font-medium mb-2">
+                <span class="lang-de">Universität Innsbruck</span
+                ><span class="lang-en">University of Innsbruck</span>
+              </div>
+              <div class="text-brand-muted text-sm mt-2">
+                <p class="lang-de">
+                  Schwerpunkt Software Engineering. Spezialisierung auf Natural
+                  Language Processing (NLP) und Data Science im Abschlussjahr.
+                </p>
+                <p class="lang-en">
+                  Focus on Software Engineering. Specialized in Natural Language
+                  Processing (NLP) and Data Science in the final year.
+                </p>
+              </div>
+            </div>
+          </div>
+          <!-- Item 4 (MatheArena) -->
+          <div class="relative pl-8 md:pl-12">
+            <span
+              class="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-brand-gray ring-4 ring-brand-dark"
+            ></span>
+            <div
+              class="glass-panel p-6 rounded-lg border-l-4 border-brand-gray hover:bg-brand-gray/20 transition-colors"
+            >
+              <div class="flex justify-between items-start mb-1">
+                <span
+                  class="text-brand-muted font-mono text-xs uppercase tracking-wide"
+                  >2021 - 2022</span
+                >
+                <span class="text-brand-muted text-xs">Remote</span>
+              </div>
+              <h3 class="text-lg font-bold text-brand-white">
+                Application Developer
+              </h3>
+              <div class="text-brand-muted text-sm font-medium mb-2">
+                Mathe-Arena
+              </div>
+              <div class="text-brand-muted text-sm mt-2">
+                <span
+                  class="bg-brand-gray text-brand-white text-[10px] px-1 rounded mr-1"
+                  >PREVIOUS</span
+                >
+                <p class="lang-de">
+                  Entwicklung plattformübergreifender Mobile Apps mit Flutter.
+                  Arbeit an REST-APIs und NoSQL-Datenbankmigrationen.
+                </p>
+                <p class="lang-en">
+                  Built cross-platform mobile applications with Flutter. Worked
+                  on REST-APIs and NoSQL database migrations.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </section>
 
     <!-- Awards & Honours Section -->
-    <section class="py-24 bg-brand-gray/10 relative z-10 animate-fade-in-up" id="awards">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold mb-4 text-brand-white">
-                    <span class="lang-de">Auszeichnungen &amp; <span class="text-brand-cyan">Ehrungen</span></span>
-                    <span class="lang-en">Honours &amp; <span class="text-brand-cyan">Awards</span></span>
-                </h2>
-                <p class="text-brand-muted">
-                    <span class="lang-de">Anerkennung für akademische und sportliche Exzellenz.</span>
-                    <span class="lang-en">Recognition for academic and athletic excellence.</span>
-                </p>
-            </div>
-            <div class="grid md:grid-cols-3 gap-6">
-                <div class="glass-panel p-6 rounded-xl text-center hover:-translate-y-1 transition-transform">
-                    <div class="w-12 h-12 mx-auto bg-yellow-500/20 rounded-full flex items-center justify-center mb-4 text-yellow-500">
-                        <span class="material-symbols-outlined">emoji_events</span>
-                    </div>
-                    <h3 class="font-bold text-brand-white mb-2">
-                        <span class="lang-de">Physik Olympiade Gold</span><span class="lang-en">Physics Olympiad Gold</span>
-                    </h3>
-                    <p class="text-sm text-brand-muted">
-                        <span class="lang-de">Goldmedaille bei der Physik-Olympiade Tirol (2021) und Qualifikation für das Bundesfinale.</span>
-                        <span class="lang-en">Won gold medal in Physics Olympiad Tirol (2021) and qualified for Austrian finals.</span>
-                    </p>
-                </div>
-                <div class="glass-panel p-6 rounded-xl text-center hover:-translate-y-1 transition-transform">
-                    <div class="w-12 h-12 mx-auto bg-blue-500/20 rounded-full flex items-center justify-center mb-4 text-blue-400">
-                        <span class="material-symbols-outlined">science</span>
-                    </div>
-                    <h3 class="font-bold text-brand-white mb-2">Dr. Hans Riegel Prize</h3>
-                    <p class="text-sm text-brand-muted">
-                        <span class="lang-de">3. Platz für Facharbeit über ein Michelson-Interferometer aus LEGO-Steinen.</span>
-                        <span class="lang-en">3rd place for thesis on Michelson-Interferometer built with LEGO blocks.</span>
-                    </p>
-                </div>
-                <div class="glass-panel p-6 rounded-xl text-center hover:-translate-y-1 transition-transform">
-                    <div class="w-12 h-12 mx-auto bg-red-500/20 rounded-full flex items-center justify-center mb-4 text-red-400">
-                        <span class="material-symbols-outlined">fitness_center</span>
-                    </div>
-                    <h3 class="font-bold text-brand-white mb-2">
-                        <span class="lang-de">Staatsmeister</span><span class="lang-en">National Champion</span>
-                    </h3>
-                    <p class="text-sm text-brand-muted">
-                        <span class="lang-de">Österreichischer Meister (U18) im Diskuswurf (45,95m). Tiroler Rekordhalter.</span>
-                        <span class="lang-en">Austrian Champion (U18) in Discus Throw (45.95m). Tyrolean record holder.</span>
-                    </p>
-                </div>
-            </div>
+    <section
+      class="py-24 bg-brand-gray/10 relative z-10 animate-fade-in-up"
+      id="awards"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold mb-4 text-brand-white">
+            <span class="lang-de"
+              >Auszeichnungen &amp;
+              <span class="text-brand-cyan">Ehrungen</span></span
+            >
+            <span class="lang-en"
+              >Honours &amp; <span class="text-brand-cyan">Awards</span></span
+            >
+          </h2>
+          <p class="text-brand-muted">
+            <span class="lang-de"
+              >Anerkennung für akademische und sportliche Exzellenz.</span
+            >
+            <span class="lang-en"
+              >Recognition for academic and athletic excellence.</span
+            >
+          </p>
         </div>
+        <div class="grid md:grid-cols-3 gap-6">
+          <div
+            class="glass-panel p-6 rounded-xl text-center hover:-translate-y-1 transition-transform"
+          >
+            <div
+              class="w-12 h-12 mx-auto bg-yellow-500/20 rounded-full flex items-center justify-center mb-4 text-yellow-500"
+            >
+              <span class="material-symbols-outlined">emoji_events</span>
+            </div>
+            <h3 class="font-bold text-brand-white mb-2">
+              <span class="lang-de">Physik Olympiade Gold</span
+              ><span class="lang-en">Physics Olympiad Gold</span>
+            </h3>
+            <p class="text-sm text-brand-muted">
+              <span class="lang-de"
+                >Goldmedaille bei der Physik-Olympiade Tirol (2021) und
+                Qualifikation für das Bundesfinale.</span
+              >
+              <span class="lang-en"
+                >Won gold medal in Physics Olympiad Tirol (2021) and qualified
+                for Austrian finals.</span
+              >
+            </p>
+          </div>
+          <div
+            class="glass-panel p-6 rounded-xl text-center hover:-translate-y-1 transition-transform"
+          >
+            <div
+              class="w-12 h-12 mx-auto bg-blue-500/20 rounded-full flex items-center justify-center mb-4 text-blue-400"
+            >
+              <span class="material-symbols-outlined">science</span>
+            </div>
+            <h3 class="font-bold text-brand-white mb-2">
+              Dr. Hans Riegel Prize
+            </h3>
+            <p class="text-sm text-brand-muted">
+              <span class="lang-de"
+                >3. Platz für Facharbeit über ein Michelson-Interferometer aus
+                LEGO-Steinen.</span
+              >
+              <span class="lang-en"
+                >3rd place for thesis on Michelson-Interferometer built with
+                LEGO blocks.</span
+              >
+            </p>
+          </div>
+          <div
+            class="glass-panel p-6 rounded-xl text-center hover:-translate-y-1 transition-transform"
+          >
+            <div
+              class="w-12 h-12 mx-auto bg-red-500/20 rounded-full flex items-center justify-center mb-4 text-red-400"
+            >
+              <span class="material-symbols-outlined">fitness_center</span>
+            </div>
+            <h3 class="font-bold text-brand-white mb-2">
+              <span class="lang-de">Staatsmeister</span
+              ><span class="lang-en">National Champion</span>
+            </h3>
+            <p class="text-sm text-brand-muted">
+              <span class="lang-de"
+                >Österreichischer Meister (U18) im Diskuswurf (45,95m). Tiroler
+                Rekordhalter.</span
+              >
+              <span class="lang-en"
+                >Austrian Champion (U18) in Discus Throw (45.95m). Tyrolean
+                record holder.</span
+              >
+            </p>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- Contact Section -->
-    <section class="py-24 relative z-10 bg-gradient-to-t from-brand-dark to-transparent animate-fade-in-up" id="contact">
-        <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center">
-            <h2 class="text-3xl md:text-5xl font-bold mb-6 text-brand-white">
-                <span class="lang-de">Lassen Sie uns <span class="text-brand-cyan">etwas bauen</span></span>
-                <span class="lang-en">Let's <span class="text-brand-cyan">Build Something</span></span>
-            </h2>
-            <div class="text-xl text-brand-muted mb-10">
-                <p class="lang-de">
-                    Ich nehme derzeit neue Freelance-Projekte an. <br>
-                    Egal ob Sie einen eigenen KI-Agenten, einen RAG-Workflow oder einen technischen Partner brauchen – lassen Sie uns sprechen.
-                </p>
-                <p class="lang-en">
-                    I'm currently accepting new freelance projects. <br>
-                    Whether you need a custom AI agent, a RAG workflow, or a technical partner, let's talk.
-                </p>
-            </div>
-            <div class="flex flex-col md:flex-row gap-6 justify-center items-center">
-                <a class="group relative px-8 py-4 bg-brand-cyan text-brand-dark font-bold text-lg rounded-full overflow-hidden transition-all hover:scale-105 hover:neon-glow w-full md:w-auto" href="mailto:andreas.herzinger02@gmail.com">
-                    <span class="relative z-10 flex items-center justify-center gap-2">
-                        <span class="material-symbols-outlined">mail</span>
-                        <span class="lang-de">Anfrage senden</span><span class="lang-en">Send a Request</span>
-                    </span>
-                </a>
-                <div class="flex gap-4">
-                    <a class="p-4 glass-panel rounded-full hover:bg-brand-white/10 hover:text-brand-cyan transition-colors" href="https://github.com/aherzinger" target="_blank">
-                        <img alt="GitHub" class="w-6 h-6 filter invert" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg">
-                    </a>
-                    <a class="p-4 glass-panel rounded-full hover:bg-brand-white/10 hover:text-brand-cyan transition-colors" href="https://www.linkedin.com/in/andreas-herzinger-51b688224" target="_blank">
-                        <img alt="LinkedIn" class="w-6 h-6" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg">
-                    </a>
-                </div>
-            </div>
-            <footer class="mt-20 pt-8 border-t border-brand-gray text-brand-muted text-sm">
-                <p>© 2025 Andreas Herzinger. Built with Tailwind CSS.</p>
-            </footer>
+    <section
+      class="py-24 relative z-10 bg-gradient-to-t from-brand-dark to-transparent animate-fade-in-up"
+      id="contact"
+    >
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center">
+        <h2 class="text-3xl md:text-5xl font-bold mb-6 text-brand-white">
+          <span class="lang-de"
+            >Lassen Sie uns
+            <span class="text-brand-cyan">etwas bauen</span></span
+          >
+          <span class="lang-en"
+            >Let's <span class="text-brand-cyan">Build Something</span></span
+          >
+        </h2>
+        <div class="text-xl text-brand-muted mb-10">
+          <p class="lang-de">
+            Ich nehme derzeit neue Freelance-Projekte an. <br />
+            Egal ob Sie einen eigenen KI-Agenten, einen RAG-Workflow oder einen
+            technischen Partner brauchen – lassen Sie uns sprechen.
+          </p>
+          <p class="lang-en">
+            I'm currently accepting new freelance projects. <br />
+            Whether you need a custom AI agent, a RAG workflow, or a technical
+            partner, let's talk.
+          </p>
         </div>
+        <div
+          class="flex flex-col md:flex-row gap-6 justify-center items-center"
+        >
+          <a
+            class="group relative px-8 py-4 bg-brand-cyan text-brand-dark font-bold text-lg rounded-full overflow-hidden transition-all hover:scale-105 hover:neon-glow w-full md:w-auto"
+            href="mailto:andreas.herzinger02@gmail.com"
+          >
+            <span class="relative z-10 flex items-center justify-center gap-2">
+              <span class="material-symbols-outlined">mail</span>
+              <span class="lang-de">Anfrage senden</span
+              ><span class="lang-en">Send a Request</span>
+            </span>
+          </a>
+          <div class="flex gap-4">
+            <a
+              class="p-4 glass-panel rounded-full hover:bg-brand-white/10 hover:text-brand-cyan transition-colors"
+              href="https://github.com/aherzinger"
+              target="_blank"
+            >
+              <img
+                alt="GitHub"
+                class="w-6 h-6 filter invert"
+                src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg"
+              />
+            </a>
+            <a
+              class="p-4 glass-panel rounded-full hover:bg-brand-white/10 hover:text-brand-cyan transition-colors"
+              href="https://www.linkedin.com/in/andreas-herzinger-51b688224"
+              target="_blank"
+            >
+              <img
+                alt="LinkedIn"
+                class="w-6 h-6"
+                src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg"
+              />
+            </a>
+          </div>
+        </div>
+        <footer
+          class="mt-20 pt-8 border-t border-brand-gray text-brand-muted text-sm"
+        >
+          <p>© 2025 Andreas Herzinger. Built with Tailwind CSS.</p>
+        </footer>
+      </div>
     </section>
 
     <!-- Simple Chatbot -->
-    <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4" id="chatbot-container">
-        <!-- Chat Window -->
-        <div class="hidden w-80 h-96 glass-panel-heavy rounded-2xl flex flex-col overflow-hidden shadow-2xl origin-bottom-right" id="chat-window">
-            <!-- Header -->
-            <div class="bg-brand-cyan/10 p-4 border-b border-brand-cyan/20 flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                    <span class="font-bold text-brand-white text-sm">Andreas' Bot</span>
-                </div>
-                <button class="text-brand-muted hover:text-brand-white" onclick="toggleChat()">
-                    <span class="material-symbols-outlined text-sm">close</span>
-                </button>
-            </div>
-            <!-- Messages -->
-            <div class="flex-1 overflow-y-auto p-4 space-y-3" id="chat-messages">
-                <!-- Bot Welcome Message will be injected by JS -->
-            </div>
-            <!-- Input -->
-            <div class="p-3 bg-brand-dark/50 border-t border-brand-cyan/10">
-                <div class="flex gap-2">
-                    <input class="flex-1 bg-brand-gray/50 border border-brand-gray rounded-full px-4 py-2 text-xs text-brand-white focus:outline-none focus:border-brand-cyan transition-colors" id="chat-input" placeholder="..." type="text">
-                    <button class="bg-brand-cyan text-brand-dark p-2 rounded-full hover:bg-white transition-colors" onclick="sendMessage()">
-                        <span class="material-symbols-outlined text-sm">send</span>
-                    </button>
-                </div>
-            </div>
+    <div
+      class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4"
+      id="chatbot-container"
+    >
+      <!-- Chat Window -->
+      <div
+        class="hidden w-80 h-96 glass-panel-heavy rounded-2xl flex flex-col overflow-hidden shadow-2xl origin-bottom-right"
+        id="chat-window"
+      >
+        <!-- Header -->
+        <div
+          class="bg-brand-cyan/10 p-4 border-b border-brand-cyan/20 flex justify-between items-center"
+        >
+          <div class="flex items-center gap-2">
+            <span
+              class="w-2 h-2 bg-green-500 rounded-full animate-pulse"
+            ></span>
+            <span class="font-bold text-brand-white text-sm">Andreas' Bot</span>
+          </div>
+          <button
+            class="text-brand-muted hover:text-brand-white"
+            onclick="toggleChat()"
+          >
+            <span class="material-symbols-outlined text-sm">close</span>
+          </button>
         </div>
-        <!-- Toggle Button -->
-        <button class="w-14 h-14 bg-brand-cyan text-brand-dark rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform duration-300 neon-glow" onclick="toggleChat()">
-            <span class="material-symbols-outlined text-2xl">chat_bubble</span>
-        </button>
+        <!-- Messages -->
+        <div class="flex-1 overflow-y-auto p-4 space-y-3" id="chat-messages">
+          <!-- Bot Welcome Message will be injected by JS -->
+        </div>
+        <!-- Input -->
+        <div class="p-3 bg-brand-dark/50 border-t border-brand-cyan/10">
+          <div class="flex gap-2">
+            <input
+              class="flex-1 bg-brand-gray/50 border border-brand-gray rounded-full px-4 py-2 text-xs text-brand-white focus:outline-none focus:border-brand-cyan transition-colors"
+              id="chat-input"
+              placeholder="..."
+              type="text"
+            />
+            <button
+              class="bg-brand-cyan text-brand-dark p-2 rounded-full hover:bg-white transition-colors"
+              onclick="sendMessage()"
+            >
+              <span class="material-symbols-outlined text-sm">send</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Toggle Button -->
+      <button
+        class="w-14 h-14 bg-brand-cyan text-brand-dark rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform duration-300 neon-glow"
+        onclick="toggleChat()"
+      >
+        <span class="material-symbols-outlined text-2xl">chat_bubble</span>
+      </button>
     </div>
 
     <!-- JavaScript Modules -->
     <script type="module" src="src/scripts/main.js"></script>
-    
+
     <!-- 
         IMPORTANT: You need to copy all the HTML sections from your original file here:
         - Hero Section
@@ -733,6 +1401,5 @@
         The original file also had many inline scripts for Google image processing.
         Those are external dependencies and may need to be included if you want that functionality.
     -->
-</body>
+  </body>
 </html>
-
