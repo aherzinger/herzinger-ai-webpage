@@ -117,7 +117,8 @@
                 <span class="lang-de">Projekte</span
                 ><span class="lang-en">Work</span>
               </a>
-              <!-- Theme Toggle -->
+              <!-- Theme Toggle - COMMENTED OUT -->
+              <!--
               <button
                 class="flex items-center justify-center w-8 h-8 rounded-full bg-brand-gray/50 hover:bg-brand-cyan/20 text-brand-cyan transition-all border border-brand-border"
                 onclick="toggleTheme()"
@@ -127,6 +128,7 @@
                   >light_mode</span
                 >
               </button>
+              -->
               <!-- Language Toggle -->
               <button
                 class="flex items-center gap-1 text-brand-muted hover:text-brand-white transition-colors px-3 py-2 rounded-md text-sm font-medium border border-brand-border hover:border-brand-cyan/50 min-w-[60px] justify-center"
@@ -148,12 +150,15 @@
           </div>
           <!-- Mobile menu button -->
           <div class="-mr-2 flex md:hidden items-center gap-2">
+            <!-- Theme Toggle - COMMENTED OUT -->
+            <!--
             <button
               class="flex items-center justify-center w-8 h-8 rounded-full bg-brand-gray/50 text-brand-cyan border border-brand-border"
               onclick="toggleTheme()"
             >
               <span class="material-symbols-outlined text-sm">light_mode</span>
             </button>
+            -->
             <button
               class="flex items-center gap-1 text-brand-muted px-2 py-1 rounded border border-brand-border"
               onclick="toggleLanguage()"
@@ -214,45 +219,51 @@
       class="relative z-10 min-h-screen flex items-center justify-center pt-24 pb-12 animate-fade-in-up overflow-hidden"
       id="hero"
     >
-      <!-- Background Image -->
+      <!-- Layer 1: Background Image with Sharpness Hack -->
       <div
-        class="absolute inset-0 z-0 opacity-80"
+        class="absolute inset-0 z-0 contrast-125 brightness-110 saturate-105"
         style="
           background-image: url('src/assets/hero-background.jpeg');
-          background-size: cover;
-          background-position: center;
+          background-size: 110%;
+          background-position: left 65%;
           background-attachment: fixed;
+          background-repeat: no-repeat;
         "
       ></div>
+      <style>
+        @media (max-width: 768px) {
+          #hero > div[style*="background-image"] {
+            background-position: center bottom !important;
+            background-size: cover !important;
+          }
+        }
+      </style>
 
-      <!-- Gradient Overlay - Theme Aware -->
+      <!-- Layer 2: Gradient Overlay for Text Readability -->
       <div
-        class="absolute inset-0 z-10 bg-gradient-to-b from-brand-dark/70 via-brand-dark/80 to-brand-dark/90"
-      ></div>
-      <div
-        class="absolute inset-0 z-10 bg-gradient-to-t from-brand-dark via-transparent to-transparent"
+        class="absolute inset-0 z-10 bg-gradient-to-b from-slate-900/60 to-[#020617]"
       ></div>
 
-      <!-- Content -->
+      <!-- Layer 3: Content Container -->
       <div
         class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center text-center"
       >
         <div
-          class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-cyan/10 border border-brand-cyan/30 text-brand-cyan text-sm font-mono tracking-widest uppercase mb-6 backdrop-blur-md"
+          class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#6bfbce]/10 border border-[#6bfbce]/30 text-[#6bfbce] text-sm font-mono tracking-widest uppercase mb-6 backdrop-blur-md"
         >
           <span class="relative flex h-2 w-2">
             <span
-              class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-cyan opacity-75"
+              class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#6bfbce] opacity-75"
             ></span>
             <span
-              class="relative inline-flex rounded-full h-2 w-2 bg-brand-cyan"
+              class="relative inline-flex rounded-full h-2 w-2 bg-[#6bfbce]"
             ></span>
           </span>
           <span class="lang-de">Freelance KI-Ingenieur</span>
           <span class="lang-en">Freelance AI Engineer</span>
         </div>
         <h1
-          class="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight text-brand-white mb-8 max-w-4xl"
+          class="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight text-white mb-8 max-w-4xl"
         >
           <span class="lang-de"
             >Ingenieurskunst für <br /><span class="gradient-text"
@@ -265,27 +276,27 @@
             ></span
           >
         </h1>
-        <div class="text-xl text-brand-muted max-w-2xl leading-relaxed mb-10">
+        <div class="text-xl text-gray-300 max-w-2xl leading-relaxed mb-10">
           <p class="lang-de">
             Ich bin
-            <span class="text-brand-white font-bold">Andreas Herzinger</span>.
-            Als Freelancer und KI-Partner helfe ich Unternehmen, ihr Potenzial
-            durch maßgeschneiderte
-            <span class="text-brand-cyan">Generative-AI</span> Agenten und
+            <span class="text-white font-bold">Andreas Herzinger</span>. Als
+            Freelancer und KI-Partner helfe ich Unternehmen, ihr Potenzial durch
+            maßgeschneiderte
+            <span class="text-[#6bfbce]">Generative-AI</span> Agenten und
             funktionierende Automatisierungen zu entfalten.
           </p>
           <p class="lang-en">
             I'm
-            <span class="text-brand-white font-bold">Andreas Herzinger</span>.
-            As a freelancer and AI partner, I help businesses unlock their
-            potential by building custom
-            <span class="text-brand-cyan">Generative AI</span> agents and
+            <span class="text-white font-bold">Andreas Herzinger</span>. As a
+            freelancer and AI partner, I help businesses unlock their potential
+            by building custom
+            <span class="text-[#6bfbce]">Generative AI</span> agents and
             automations that actually work.
           </p>
         </div>
         <div class="flex flex-wrap gap-4 justify-center">
           <a
-            class="group relative px-8 py-4 bg-brand-cyan text-brand-dark font-bold text-lg rounded-lg overflow-hidden transition-all hover:scale-105 hover:neon-glow"
+            class="group relative px-8 py-4 bg-[#6bfbce] text-gray-900 font-bold text-lg rounded-lg overflow-hidden transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(107,251,206,0.5)]"
             href="mailto:andreas.herzinger02@gmail.com"
           >
             <span class="relative z-10 flex items-center gap-2">
@@ -298,7 +309,7 @@
             </span>
           </a>
           <a
-            class="px-8 py-4 glass-panel text-brand-white font-bold rounded-lg hover:bg-brand-white/5 transition-all flex items-center gap-2 text-lg"
+            class="px-8 py-4 bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold rounded-lg hover:bg-white/15 transition-all flex items-center gap-2 text-lg"
             href="#projects"
           >
             <span class="lang-de">Portfolio ansehen</span
@@ -311,11 +322,10 @@
         class="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2 animate-bounce cursor-pointer opacity-50 hover:opacity-100 transition-opacity"
         onclick="document.getElementById('about').scrollIntoView({behavior: 'smooth'})"
       >
-        <span
-          class="text-xs font-mono uppercase tracking-widest text-brand-cyan"
+        <span class="text-xs font-mono uppercase tracking-widest text-[#6bfbce]"
           >Scroll</span
         >
-        <span class="material-symbols-outlined text-brand-cyan"
+        <span class="material-symbols-outlined text-[#6bfbce]"
           >expand_more</span
         >
       </div>
