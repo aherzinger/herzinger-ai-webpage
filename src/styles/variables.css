@@ -1,0 +1,31 @@
+/* --- Theming Variables --- */
+:root {
+    /* Default Dark Theme (Cyberpunk/Tech) */
+    --color-bg-main: #0B0C10;
+    --color-bg-secondary: #1F2833;
+    --color-accent-primary: #66FCF1; /* Cyan */
+    --color-accent-secondary: #45A29E; /* Teal */
+    --color-text-main: #C5C6C7;
+    --color-text-muted: #9CA3AF;
+    --color-border: rgba(102, 252, 241, 0.1);
+    --color-bg-panel: rgba(31, 40, 51, 0.6);
+    --gradient-start: #66FCF1;
+    --gradient-end: #45A29E;
+    --shadow-glow: 0 0 15px rgba(102, 252, 241, 0.15);
+}
+
+/* Light Theme (Austrian Professional) */
+body.theme-light {
+    --color-bg-main: #FFFFFF;
+    --color-bg-secondary: #F3F4F6;
+    --color-accent-primary: #005691; /* Professional Blue */
+    --color-accent-secondary: #1E3A8A; /* Dark Blue */
+    --color-text-main: #1A202C;
+    --color-text-muted: #4A5568;
+    --color-border: rgba(0, 86, 145, 0.15);
+    --color-bg-panel: rgba(255, 255, 255, 0.90);
+    --gradient-start: #005691;
+    --gradient-end: #1E3A8A;
+    --shadow-glow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+

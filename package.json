@@ -1,0 +1,21 @@
+{
+  "name": "herzinger-ai-portfolio",
+  "version": "1.0.0",
+  "description": "Portfolio website for Andreas Herzinger - AI Engineer",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx serve . -p 3000",
+    "start": "npx serve . -p 3000"
+  },
+  "keywords": [
+    "portfolio",
+    "ai",
+    "freelance"
+  ],
+  "author": "Andreas Herzinger",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.2.1"
+  }
+}
+
