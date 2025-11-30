@@ -211,11 +211,31 @@
 
     <!-- Hero Section -->
     <section
-      class="relative z-10 min-h-screen flex items-center justify-center pt-24 pb-12 animate-fade-in-up"
+      class="relative z-10 min-h-screen flex items-center justify-center pt-24 pb-12 animate-fade-in-up overflow-hidden"
       id="hero"
     >
+      <!-- Background Image -->
       <div
-        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center text-center"
+        class="absolute inset-0 z-0 opacity-80"
+        style="
+          background-image: url('src/assets/hero-background.jpeg');
+          background-size: cover;
+          background-position: center;
+          background-attachment: fixed;
+        "
+      ></div>
+
+      <!-- Gradient Overlay - Theme Aware -->
+      <div
+        class="absolute inset-0 z-10 bg-gradient-to-b from-brand-dark/70 via-brand-dark/80 to-brand-dark/90"
+      ></div>
+      <div
+        class="absolute inset-0 z-10 bg-gradient-to-t from-brand-dark via-transparent to-transparent"
+      ></div>
+
+      <!-- Content -->
+      <div
+        class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center text-center"
       >
         <div
           class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-cyan/10 border border-brand-cyan/30 text-brand-cyan text-sm font-mono tracking-widest uppercase mb-6 backdrop-blur-md"
@@ -1124,7 +1144,7 @@
             class="glass-panel p-6 rounded-xl text-center hover:-translate-y-1 transition-transform"
           >
             <div
-              class="w-12 h-12 mx-auto bg-yellow-500/20 rounded-full flex items-center justify-center mb-4 text-yellow-500"
+              class="w-12 h-12 mx-auto bg-brand-cyan/10 rounded-full flex items-center justify-center mb-4 text-brand-cyan"
             >
               <span class="material-symbols-outlined">emoji_events</span>
             </div>
@@ -1147,7 +1167,7 @@
             class="glass-panel p-6 rounded-xl text-center hover:-translate-y-1 transition-transform"
           >
             <div
-              class="w-12 h-12 mx-auto bg-blue-500/20 rounded-full flex items-center justify-center mb-4 text-blue-400"
+              class="w-12 h-12 mx-auto bg-brand-teal/10 rounded-full flex items-center justify-center mb-4 text-brand-teal"
             >
               <span class="material-symbols-outlined">science</span>
             </div>
@@ -1169,7 +1189,7 @@
             class="glass-panel p-6 rounded-xl text-center hover:-translate-y-1 transition-transform"
           >
             <div
-              class="w-12 h-12 mx-auto bg-red-500/20 rounded-full flex items-center justify-center mb-4 text-red-400"
+              class="w-12 h-12 mx-auto bg-brand-cyan/10 rounded-full flex items-center justify-center mb-4 text-brand-cyan"
             >
               <span class="material-symbols-outlined">fitness_center</span>
             </div>
